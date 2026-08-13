@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyle Woods — Data Analyst & Analytics Engineer</title>
+<meta name="description" content="Data analyst and analytics engineer in Salt Lake City. Fleet telemetry at 100K+ device scale, dbt pipelines, R APIs in production, and hand-built D3 data journalism.">
+<meta property="og:title" content="Kyle Woods — Data Analyst & Analytics Engineer">
+<meta property="og:description" content="Nine years turning instrumented hardware into decisions. dbt, SQL, R, Python, D3.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/og-dashboard.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+<a class="skip" href="#work">Skip to work</a>
+<header data-site-head></header>
+
+<main>
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Salt Lake City, UT · Data Analyst &amp; Analytics Engineer</p>
+        <h1>I take instrumented things and make them <span class="ember">answer questions</span>.</h1>
+        <p class="hero-lede">Nine years in test engineering taught me that the hard part is never the measurement — it's turning a hundred thousand devices' worth of noise into something a team can act on. I build the pipelines, the models and the charts that close that gap. <strong>Currently doing that for connected grills; looking to do it somewhere new.</strong></p>
+        <div class="hero-meta">
+          <a class="btn btn-primary" href="#work">See the work</a>
+          <a class="btn" href="resume/KW_Analytics_Engineer.pdf">Resume (PDF)</a>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Currently</p>
+        <p class="hero-lede" style="font-size:15px">Senior Test Engineer &amp; Data Analyst at Traeger Grills, where I model IoT telemetry into the dashboards and reports that drive product and marketing decisions.</p>
+        <p class="eyebrow" style="margin-top:22px">Working in</p>
+        <ul class="chips">
+          <li class="chip">SQL</li>
+          <li class="chip">dbt</li>
+          <li class="chip">R</li>
+          <li class="chip">Python</li>
+          <li class="chip">D3</li>
+          <li class="chip">Docker</li>
+          <li class="chip">Grafana</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TICKER ============================ -->
+  <section class="wrap" aria-label="Career metrics">
+    <div class="ticker">
+      <div class="ticker-cell" data-kind="scope">
+        <span class="stat-value num" data-count="5" data-unit="M+" data-dp="0">0</span>
+        <span class="stat-label">Rows modelled in a<br>consumer segmentation</span>
+      </div>
+      <div class="ticker-cell" data-kind="scope">
+        <span class="stat-value num" data-count="100" data-unit="K+">0</span>
+        <span class="stat-label">Connected devices in<br>the fleet I analyse</span>
+      </div>
+      <div class="ticker-cell" data-kind="outcome">
+        <span class="stat-value num" data-count="83" data-unit="%">0</span>
+        <span class="stat-label">Less analysis time after<br>automating a test workflow</span>
+      </div>
+      <div class="ticker-cell" data-kind="scope">
+        <span class="stat-value num" data-count="35" data-unit="+">0</span>
+        <span class="stat-label">Standard test procedures<br>authored</span>
+      </div>
+      <div class="ticker-cell" data-kind="outcome">
+        <span class="stat-value num" data-count="50" data-unit="%">0</span>
+        <span class="stat-label">Faster product certification<br>after in-house accreditation</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PANELS ============================ -->
+  <section class="wrap" id="work">
+    <div class="panels-head">
+      <h2>Selected work</h2>
+      <p class="mono ash">Four projects · click any panel</p>
+    </div>
+
+    <div class="disclosure">
+      <strong>On the data.</strong> Three of these projects were built at work, so every chart on this site is redrawn
+      from seeded synthetic generators that preserve the shape of the original analysis and none of its values — the
+      generators are in <a href="data/generators/">data/generators/</a> and are worth reading in their own right.
+      The DJ project is the exception: that one is entirely real.
+    </div>
+
+    <div class="panels">
+
+      <!-- Woodridge -->
+      <a class="panel panel--wide" href="projects/woodridge-churn/index.html">
+        <div class="panel-top">
+          <span class="panel-idx">01 / Fleet analytics</span>
+          <span class="badge badge-shipped">Shipped</span>
+        </div>
+        <h3>Error trends &amp; churn attribution</h3>
+        <p class="panel-mission">Which component failures actually make someone stop using their grill? A dbt pipeline over 100K+ connected devices, a data-quality bug that reported 1,200% error rates, and the churn model that found the signal underneath.</p>
+        <div class="panel-viz" data-mini="woodridge"></div>
+        <p class="panel-outcome">→ Two components identified as the drivers of hardware-caused churn, feeding refresh planning</p>
+        <ul class="chips">
+          <li class="chip">dbt</li>
+          <li class="chip">100K+ devices</li>
+          <li class="chip">Weekly grain</li>
+          <li class="chip">TimescaleDB</li>
+        </ul>
+      </a>
+
+      <!-- Scorecard API -->
+      <a class="panel panel--wide" href="projects/scorecard-api/index.html">
+        <div class="panel-top">
+          <span class="panel-idx">02 / Automation</span>
+          <span class="badge badge-production">Production</span>
+        </div>
+        <h3>Scorecard API</h3>
+        <p class="panel-mission">The test rig already knew when the test finished, so I let it request its own analysis. An R Plumber API in Docker that turns two CSVs and a curl request into a scored plot, a graded table and an interactive report.</p>
+        <div class="panel-viz" data-mini="scorecard"></div>
+        <p class="panel-outcome">→ 83% faster analysis (30 min → 5 min), zero manual data entry</p>
+        <ul class="chips">
+          <li class="chip">R / Plumber</li>
+          <li class="chip">Docker</li>
+          <li class="chip">systemd</li>
+          <li class="chip">3 output formats</li>
+        </ul>
+      </a>
+
+      <!-- Segmentation -->
+      <a class="panel" href="projects/consumer-segmentation/index.html">
+        <div class="panel-top">
+          <span class="panel-idx">03 / Modelling</span>
+          <span class="badge badge-shipped">Shipped</span>
+        </div>
+        <h3>Consumer segmentation</h3>
+        <p class="panel-mission">Five million rows of cook telemetry, modelled into device-level behaviour and clustered into six ways people actually use the product.</p>
+        <div class="panel-viz" data-mini="segmentation"></div>
+        <p class="panel-outcome">→ Shaped marketing strategy &amp; new product development</p>
+        <ul class="chips">
+          <li class="chip">SQL / dbt / R</li>
+          <li class="chip">5M rows</li>
+          <li class="chip">90-day window</li>
+        </ul>
+      </a>
+
+      <!-- DJ -->
+      <a class="panel" href="projects/anatomy-of-a-dj-set/index.html">
+        <div class="panel-top">
+          <span class="panel-idx">04 / Personal</span>
+          <span class="badge badge-production">Live</span>
+        </div>
+        <h3>Anatomy of a DJ set</h3>
+        <p class="panel-mission">Three years of my own Serato history, parsed out of an undocumented binary format and analysed with the same suspicion I'd apply to anyone else's data. Real data, no sanitising.</p>
+        <div class="panel-viz" data-mini="dj"></div>
+        <p class="panel-outcome">→ My mixing style, quantified — and it isn't what I would have told you</p>
+        <ul class="chips">
+          <li class="chip" data-djchip="tracks">2,595 tracks</li>
+          <li class="chip" data-djchip="sets">144 sets</li>
+          <li class="chip">Python</li>
+          <li class="chip">D3</li>
+        </ul>
+      </a>
+
+      <!-- Roadmap -->
+      <div class="panel panel--ghost">
+        <div class="panel-top">
+          <span class="panel-idx">05 / Next</span>
+          <span class="badge badge-planned">Queued</span>
+        </div>
+        <h3>More coming online</h3>
+        <p class="panel-mission">What's in the build queue.</p>
+        <ul class="roadmap">
+          <li>Spotify Charts explorer — rebuild in D3</li>
+          <li>Transition model: predicting my own next track</li>
+          <li>Segment drift: watching devices change behaviour</li>
+          <li>Test-results warehouse, three years deep</li>
+        </ul>
+      </div>
+
+      <!-- About -->
+      <section class="panel panel--four" id="about">
+        <div class="panel-top">
+          <span class="panel-idx">06 / About</span>
+          <span class="badge badge-production">Open to work</span>
+        </div>
+        <h3>Kyle Woods</h3>
+        <div class="about-grid">
+          <div>
+            <div class="portrait">
+              <img src="assets/img/headshot.jpg" alt="Kyle Woods" width="800" height="800" loading="lazy">
+            </div>
+            <p class="portrait-cap">Salt Lake City, UT</p>
+          </div>
+
+          <div class="about-bio">
+            <p><strong>Nine years in test engineering, pivoting into the data work I was already doing.</strong> I started out measuring hardware and ended up building the pipelines that made the measurements mean something — IoT telemetry, dbt models, dashboards for engineers, product managers and executives.</p>
+            <p>Mechanical engineering degree, a psychology and sociology degree before it, and continuing data science coursework since. The first two explain the third: I care about how a finding lands with the person who has to act on it, not just whether it's correct.</p>
+            <p>Root cause analysis certified, five-whys by habit. And a DJ on the side — same instinct, different dataset.</p>
+          </div>
+
+          <div class="about-skills">
+            <div class="skill-block">
+              <h4>Code</h4>
+              <ul class="chips">
+                <li class="chip">SQL</li><li class="chip">dbt</li><li class="chip">R</li>
+                <li class="chip">Python</li><li class="chip">JavaScript / D3</li>
+              </ul>
+            </div>
+            <div class="skill-block">
+              <h4>Tools</h4>
+              <ul class="chips">
+                <li class="chip">Grafana</li><li class="chip">Domo</li><li class="chip">AWS / Redshift</li>
+                <li class="chip">PostgreSQL / TimescaleDB</li><li class="chip">Docker</li><li class="chip">Jira</li>
+              </ul>
+            </div>
+            <div class="skill-block">
+              <h4>Certifications</h4>
+              <ul class="chips">
+                <li class="chip">dbt Fundamentals · 2026</li>
+                <li class="chip">Root Cause Analysis · 2023</li>
+                <li class="chip">Dewesoft Sensors &amp; Instrumentation · 2020</li>
+              </ul>
+            </div>
+            <div class="skill-block">
+              <h4>Recognition</h4>
+              <ul class="chips">
+                <li class="chip">Traeger Employee Award — AI tooling adoption</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<footer data-site-foot></footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/lib/d3.v7.min.js"></script>
+<script src="assets/js/charts/common.js"></script>
+<script src="assets/js/dashboard.js"></script>
+</body>
+</html>
