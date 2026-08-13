@@ -1,0 +1,43 @@
+# ---------------------------------------------------------------------------
+# Defensive ignores. The internal source material lives OUTSIDE this repo
+# (one directory up), so none of it can be committed by accident. These rules
+# exist as a second layer in case anything is ever copied in.
+# ---------------------------------------------------------------------------
+
+# Internal source material — never commit
+wr_refresh_files/
+dj-data/
+claude-code-handoff/
+*_Jira_ticket.pdf
+*Jira Ticket.pdf
+Plumber_Scorecard_API.pdf
+Customer Segmentation*.pdf
+
+# Secrets
+.env
+.env.*
+!.env.example
+profiles.yml
+*.pem
+*.key
+credentials*
+secrets*
+
+# Raw DJ library exports (contain local filesystem paths)
+*.session
+*_Serato_*
+History Export/
+database V2
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
