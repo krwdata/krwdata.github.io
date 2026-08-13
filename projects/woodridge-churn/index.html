@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-base="../../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Error trends & churn attribution — Kyle Woods</title>
+<meta name="description" content="A fleet of 100K+ connected grills, a model that reported 1,200% error rates, and the churn analysis that turned noisy alerts into a hardware finding.">
+<meta property="og:title" content="Error trends & churn attribution — Kyle Woods">
+<meta property="og:description" content="A model reporting 1,200% error rates, the week-anchor bug behind it, and the churn model that found the signal.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="../../assets/img/og-woodridge.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header data-site-head></header>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="cs-hero">
+    <div class="wrap">
+      <p class="eyebrow"><span>Case study</span><span class="ash">·</span><span>Problem → Root cause → Fix</span><span class="badge badge-shipped">Shipped</span></p>
+      <h1>A fleet of grills, 1,200% error rates, and the eight weeks of silence that mattered</h1>
+      <p class="cs-dek">The category team wanted to know whether error codes across the connected fleet pointed at components worth changing in the next generation. Getting to an answer meant fixing my own model first, then throwing most of the answer away and asking a better question: <strong>not which errors happen most, but which errors make someone stop cooking.</strong></p>
+
+      <dl class="cs-facts">
+        <div class="cs-fact"><dt>Fleet</dt><dd>100K+ connected devices, four SKUs</dd></div>
+        <div class="cs-fact"><dt>Grain</dt><dd>Weekly, % of cooks affected</dd></div>
+        <div class="cs-fact"><dt>Stack</dt><dd>dbt on PostgreSQL / TimescaleDB, Grafana, R</dd></div>
+        <div class="cs-fact cs-fact--hi"><dt>Outcome</dt><dd>Two components identified as drivers of hardware-caused churn</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <nav class="frame-rail" aria-label="Story sections">
+    <div class="frame-rail-in">
+      <a class="frame-step" href="#problem"><span class="glyph" aria-hidden="true">⚠</span>Problem</a>
+      <a class="frame-step" href="#rootcause"><span class="glyph" aria-hidden="true">🔍</span>Root cause</a>
+      <a class="frame-step" href="#fix"><span class="glyph" aria-hidden="true">✓</span>Fix</a>
+    </div>
+  </nav>
+
+  <!-- ============================ PROBLEM ============================ -->
+  <div class="light">
+    <section id="problem">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">⚠</span> Problem</p>
+        <h2>“Do the error codes tell us anything worth engineering around?”</h2>
+        <p class="section-lede">A product line was up for a refresh. The team planning it had a reasonable question and no way to answer it: across every connected grill in the field, do component-level errors show trends that should shape the next generation?</p>
+      </div>
+
+      <div class="prose">
+        <p>The telemetry existed. Every connected grill reports alerts — fan, igniter, auger, temperature sensor, over-temperature, plus a long tail of things that are not failures at all. Nobody had ever aggregated it by component and looked at it over time.</p>
+
+        <p>So I built a small dbt project against the IoT warehouse: a staging model that isolates the device family, and a core model that rolls alerts up by week, device type and error category. Three decisions in that model did most of the work:</p>
+
+        <ul>
+          <li><strong>Exact ID matching, not string matching.</strong> Each category is defined by a specific source and alert ID pair. Fuzzy matching on alert text would have quietly swept in every renamed alert in the warehouse.</li>
+          <li><strong>Noise excluded by design.</strong> Pellet-level warnings, lid-open events, grease reminders, low-temperature alerts and sensors that do not exist on this platform are all out. They are user behaviour or housekeeping, not hardware.</li>
+          <li><strong>Percent of cooks affected, deduplicated at cook level.</strong> One failing sensor can emit a dozen alert rows in one cook. Counting rows measures how chatty the firmware is. Counting <em>cooks</em> measures how often someone's dinner was affected.</li>
+        </ul>
+
+        <p>That last one only became obvious after the first version. I started with raw monthly counts, and the chart was beautiful and useless: it tracked fleet growth. More grills, more errors. Normalising against total cooks and dropping to a weekly grain was the difference between a picture of sales and a picture of reliability.</p>
+      </div>
+
+      <div class="callout">
+        <h4>A note on the numbers on this page</h4>
+        <p>Every chart here is generated from a seeded synthetic model that preserves the shape of the real analysis — the fleet ramp, the seasonality, the ranking of components, the bug — and none of its values. The generators are in <a href="../../data/generators/">data/generators/</a> and the method is worth as much as the result.</p>
+      </div>
+    </section>
+
+    <!-- ============================ ROOT CAUSE ============================ -->
+    <section id="rootcause">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">🔍</span> Root cause, part one: the data</p>
+        <h2>The model said 1,200% of cooks had an error</h2>
+        <p class="section-lede">Before you can find out whether a component is failing, you have to be sure the thing measuring it isn't. Mine wasn't.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="scrolly" id="scrolly-trends">
+          <div class="scrolly-graphic">
+            <figure data-viz="rates">
+              <div class="graphic-head">
+                <span class="chart-title">Cooks affected by a hardware error, weekly</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="legend" data-legend="rates"></div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+            <figure data-viz="anchor">
+              <div class="graphic-head">
+                <span class="chart-title">Ten cooks around one week boundary</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+          </div>
+
+          <div class="scrolly-steps">
+            <div class="step"><div class="step-card">
+              <span class="step-n">01</span>
+              <h3>A rate that can't exist</h3>
+              <p>An error rate is cooks-with-an-error divided by cooks. It cannot exceed 100%. Mine reached four figures in some weeks, which is the most useful kind of bug: one that announces itself.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">02</span>
+              <h3>The worst weeks are the smallest weeks</h3>
+              <p>Zooming into the launch period explains half of it. Early on, the fleet is a few hundred devices and a week might contain a few dozen cooks. Any alert that had no matching cook session — an engineering unit, a dropped record — went into the numerator with nothing beneath it in the denominator. Against thirty-six cooks, a few hundred stray alerts produce a four-figure percentage.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">03</span>
+              <h3>The other half: two clocks</h3>
+              <p>Here are ten cooks either side of a single week boundary. Nothing is wrong with any of them. The problem is in how the two halves of my calculation decided which week each one belonged to.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">04</span>
+              <h3>Two timestamps, two answers</h3>
+              <p>The denominator counted a cook by <span class="mono">start_time_of_cook</span> — the black dot. The numerator counted it by the alert's <span class="mono">observed_at</span> — the orange one. For most cooks those fall minutes apart and it makes no difference at all.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">05</span>
+              <h3>Until the cook crosses midnight on Sunday</h3>
+              <p>A brisket that goes on at nine on Saturday night and throws a sensor error at seven the next morning is counted in week N by one side of the fraction and week N+1 by the other. Do that for two years and some weeks accumulate errors with no cooks to divide them by.</p>
+              <p>Five of these ten cooks straddle the boundary. In a fleet doing hundreds of thousands of cooks a week, that is not a rounding error — it is a systematic drift that never cancels out.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">06</span>
+              <h3>One anchor</h3>
+              <p>The fix is three lines: join the alerts through the cook session, anchor both sides of the fraction to the cook's start time, and drop alerts whose cook ID has no matching session at all. Same data, same query, same fleet. Watch the axis.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">07</span>
+              <h3>And now there's a signal</h3>
+              <p>With the noise gone, one series moves and four don't. Temperature-sensor errors run elevated for the first half of the timeline and taper through the second, after a revised component enters production. The taper is slow rather than a cliff, which is what you'd expect: units built with the earlier part keep shipping and stay in the field for years.</p>
+              <p>That result mattered for a reason beyond the chart. The sensor issue was already known and already fixed. The model recovered it independently, from telemetry alone, without being told to look — which is how you find out whether a model is worth trusting on the things you don't already know.</p>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h3>The fix, in full</h3>
+        <p>The numerator CTE now joins alerts to the cook session and takes its week from the same column the denominator uses.</p>
+      </div>
+      <pre class="code"><code><span class="c">-- Use cook start time (same anchor as total_cooks) so numerator and</span>
+<span class="c">-- denominator are always aligned to the same week. The join also</span>
+<span class="c">-- naturally excludes alerts whose cook_id has no cook session.</span>
+<span class="k">select</span>
+    date_trunc(<span class="s">'week'</span>, cook.start_time_of_cook)::<span class="k">date</span> <span class="k">as</span> error_week,
+    ...
+<span class="k">from</span> alerts
+<span class="k">join</span> cook_sessions cook
+    <span class="k">on</span>  cook.cook_id     = alerts.cook_id
+    <span class="k">and</span> cook.device_uuid = alerts.device_uuid
+<span class="k">where</span> alerts.severity <span class="k">in</span> (<span class="s">'WARNING'</span>, <span class="s">'CRITICAL'</span>)
+  <span class="k">and</span> alerts.cook_id <span class="k">is not null</span></code></pre>
+      <p class="code-cap">Simplified from the production model; table names generalised.</p>
+
+      <div class="prose">
+        <p>I have a root cause analysis certification and five-whys training, and the honest version of this story is that the certification didn't find the bug — the impossible number did. What the training gives you is the discipline to keep asking after the first plausible answer. "Alerts without cooks" explained the launch weeks and would have been a satisfying place to stop. It did not explain the drift in the weeks after that. The second anchor problem was underneath it.</p>
+      </div>
+
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">🔍</span> Root cause, part two: the question</p>
+        <h2>A correct chart that still couldn't answer the question</h2>
+        <p class="section-lede">The model was right and the finding was thin. I took it to the electrical engineering team, and the conversation was the most useful part of the project.</p>
+      </div>
+
+      <div class="prose">
+        <p>Igniter errors are the clearest example. The igniter fires, the grill doesn't light, an error is logged. That happens when the igniter has failed — and it happens when the hopper is empty. The alert is identical. Raw error frequency counts both, so a ranking of error frequency is partly a ranking of how often people run out of pellets.</p>
+
+        <p>High-temperature events have the same problem in reverse: they spike in summer and during long cooks, and mostly describe what was being cooked rather than the grill's condition.</p>
+
+        <p>So the frequency chart was accurate and not decision-grade. What the refresh team actually needed to know was not which error is most common. It was which error <em>ends the relationship</em>.</p>
+      </div>
+
+      <blockquote class="pull">
+        Do grills that throw an igniter error stop cooking, or do they carry on?
+        <cite>The question that reframed the project</cite>
+      </blockquote>
+    </section>
+
+    <!-- ============================ FIX ============================ -->
+    <section id="fix">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">✓</span> Fix</p>
+        <h2>Churn attribution: measuring the errors people don't come back from</h2>
+        <p class="section-lede">A second model, at device grain instead of week grain, asking a behavioural question of the same telemetry.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="scrolly scrolly--flip" id="scrolly-churn">
+          <div class="scrolly-graphic">
+            <figure data-viz="funnel">
+              <div class="graphic-head">
+                <span class="chart-title">From fleet to attributed churn</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+            <figure data-viz="attribution">
+              <div class="graphic-head">
+                <span class="chart-title">Error-attributed churn by component</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+          </div>
+
+          <div class="scrolly-steps">
+            <div class="step"><div class="step-card">
+              <span class="step-n">01</span>
+              <h3>Start with everything</h3>
+              <p>Every connected device across the four SKUs in the family. Most of the interesting work in this model is deciding which of them the analysis is allowed to speak about.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">02</span>
+              <h3>Active: five or more lifetime cooks</h3>
+              <p>Plenty of grills are registered, used twice and forgotten. If someone never really started, their silence says nothing about the hardware. Five cooks is a low bar that removes a lot of noise.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">03</span>
+              <h3>Churned: eight weeks of silence</h3>
+              <p>Long enough to survive a holiday, a bad month, and most of an off-season. Grilling is seasonal, so this threshold is doing real work — anything much shorter and the model would rediscover winter every year.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">04</span>
+              <h3>Attributed: an error in the last five cooks</h3>
+              <p>The device went quiet, and a qualifying hardware error appears inside its final five sessions. This is the most conservative attribution I could write: the error has to be visible in the last stretch of use, immediately before the silence.</p>
+              <p>Igniter errors that fire on the same cook as a pellet-level warning are excluded outright. That grill ran out of fuel; it didn't break.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">05</span>
+              <h3>Now rank the components</h3>
+              <p>This is the chart the refresh team could use. It is a different ranking from raw error frequency, because it weights each error by whether the owner ever came back.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">06</span>
+              <h3>Two components, two thirds of it</h3>
+              <p>The temperature sensor and the igniter dominate. Over-temperature events are a distant third. Fan and auger errors are loud in the logs and almost never precede a grill going quiet — which is exactly the kind of thing you want to know before spending a bill of materials increase on them.</p>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h3>What this number is not</h3>
+        <p>Error-attributed churn is a floor, not a ceiling, and the report said so in the first paragraph. The model can only see failures the grill logged. It cannot see the intermittent fault that never threw an alert, or the owner who gave up after the third annoying cook and long before anything registered as an error. Every device in that category is invisible here and is counted as ordinary churn.</p>
+
+        <p>There is a second caveat worth stating plainly: some devices in the fleet are our own test units. We don't maintain a separate database for them, so a fraction of the churn signal is engineers doing engineering things. It doesn't move the ranking, but it means the absolute counts should be read as an order of magnitude.</p>
+
+        <p>I'd rather deliver a floor with its limits written down than a point estimate that quietly overclaims. The team using it is making a bill-of-materials decision; they need to know which way the number can be wrong.</p>
+      </div>
+
+      <div class="prose">
+        <h3>What shipped</h3>
+        <p>Weekly error-rate and churn dashboards, in Grafana for people who live there and as a standalone interactive HTML build for people who don't — that second version existed purely because dashboard access was a bottleneck, and it took an afternoon in R to remove the bottleneck entirely.</p>
+        <p>The follow-up I'd want next is customer-experience data joined onto this: how many replacement kits get shipped per component, and what the support calls say. Telemetry can tell you a grill went quiet after a sensor error. It can't tell you the owner called twice first.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================ IMPACT ============================ -->
+  <section class="impact">
+    <div class="wrap">
+      <h2>Impact</h2>
+      <div class="impact-grid">
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="100" data-unit="K+">0</span>
+          <p>Connected devices across four SKUs, modelled from raw telemetry to a weekly reliability metric</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num">2</span>
+          <p>Components identified as the dominant drivers of hardware-attributed churn, feeding refresh planning</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="1" data-unit=" bug">0</span>
+          <p>Systematic week-anchor error found and fixed before the analysis reached anyone's desk</p>
+        </div>
+      </div>
+
+      <p class="stack-note">Built with</p>
+      <ul class="chips">
+        <li class="chip">dbt</li>
+        <li class="chip">PostgreSQL / TimescaleDB</li>
+        <li class="chip">SQL window functions</li>
+        <li class="chip">Docker</li>
+        <li class="chip">Grafana</li>
+        <li class="chip">R + plotly</li>
+      </ul>
+
+      <nav class="cs-nav" aria-label="Case studies">
+        <a href="../scorecard-api/index.html">
+          <span class="dir">Previous</span>
+          <span class="ttl">Scorecard API: 30 minutes to 5</span>
+        </a>
+        <a class="next" href="../consumer-segmentation/index.html">
+          <span class="dir">Next</span>
+          <span class="ttl">Six ways to cook: consumer segmentation</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer data-site-foot></footer>
+
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/lib/d3.v7.min.js"></script>
+<script src="../../assets/js/scrolly.js"></script>
+<script src="../../assets/js/charts/common.js"></script>
+<script src="../../assets/js/charts/woodridge.js"></script>
+</body>
+</html>

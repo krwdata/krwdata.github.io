@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-base="../../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorecard API: 30 minutes to 5 — Kyle Woods</title>
+<meta name="description" content="An R Plumber API in Docker that turned a manual, click-through test analysis into a request the test rig makes on its own. 83% less human time per session.">
+<meta property="og:title" content="Scorecard API: 30 minutes to 5 — Kyle Woods">
+<meta property="og:description" content="Analysis-as-a-service for a hardware test lab: R, Plumber, Docker, and one curl request fired by the test rig.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="../../assets/img/og-scorecard.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header data-site-head></header>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="cs-hero">
+    <div class="wrap">
+      <p class="eyebrow"><span>Case study</span><span class="ash">·</span><span>Past → Present → Future</span><span class="badge badge-production">Production</span></p>
+      <h1>The test rig already knew when the test finished. So I let it ask for the analysis itself.</h1>
+      <p class="cs-dek">Thermal testing in the lab was automated end to end — except for the part where a person carried the data to the analysis. That handoff cost about <strong>30 minutes of human attention per test session</strong>. Replacing it with an API took the session down to five, and removed manual data entry entirely.</p>
+
+      <dl class="cs-facts">
+        <div class="cs-fact"><dt>Built with</dt><dd>R + Plumber, Docker, systemd</dd></div>
+        <div class="cs-fact"><dt>Trigger</dt><dd>curl from the DAQ sequencer at test completion</dd></div>
+        <div class="cs-fact"><dt>Returns</dt><dd>Scored plot, graded table, interactive HTML</dd></div>
+        <div class="cs-fact cs-fact--hi"><dt>Outcome</dt><dd>30 min → 5 min, an 83% reduction</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <nav class="frame-rail" aria-label="Story sections">
+    <div class="frame-rail-in">
+      <a class="frame-step" href="#past"><span class="glyph" aria-hidden="true">←</span>Past</a>
+      <a class="frame-step" href="#present"><span class="glyph" aria-hidden="true">●</span>Present</a>
+      <a class="frame-step" href="#future"><span class="glyph" aria-hidden="true">→</span>Future</a>
+    </div>
+  </nav>
+
+  <div class="light">
+    <!-- ============================ PAST ============================ -->
+    <section id="past">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">←</span> Past</p>
+        <h2>Automated testing, manual everything else</h2>
+        <p class="section-lede">A standard thermal test drives a grill through a set-point staircase while a data acquisition system logs the temperatures. That part ran itself. What did not run itself was everything after the last data point.</p>
+      </div>
+
+      <div class="prose">
+        <p>The analysis existed and it was good — a Shiny application that scored a test and produced the plots the team used. It just needed a person: transfer the files off the acquisition laptop, open the interface, type in the model, the firmware version, the trial number, the test number, wait for the result, screenshot it, attach it to the ticket, write the summary.</p>
+        <p>Three minutes, give or take. Which sounds like nothing until you notice that standard practice is three grills running three tests each, and every one of those needs the same three minutes of somebody's attention — including the waiting.</p>
+      </div>
+    </section>
+
+    <!-- ============================ SCROLLY ============================ -->
+    <section id="present">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">●</span> Present</p>
+        <h2>An endpoint the rig can call by itself</h2>
+        <p class="section-lede">The insight is small and slightly annoying in hindsight: the sequencer that runs the test already holds every piece of metadata the analysis was asking a human to retype.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="scrolly" id="scrolly-api">
+          <div class="scrolly-graphic">
+            <figure data-viz="timing">
+              <div class="graphic-head">
+                <span class="chart-title">Human time per test session</span>
+                <span class="graphic-tag">Measured</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+            <figure data-viz="arch">
+              <div class="graphic-head">
+                <span class="chart-title">Test rig → API → results</span>
+                <span class="graphic-tag">Architecture</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+            <figure data-viz="trace">
+              <div class="graphic-head">
+                <span class="chart-title">Scorecard output: a standard thermal test</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="legend" data-legend="trace"></div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+          </div>
+
+          <div class="scrolly-steps">
+            <div class="step"><div class="step-card">
+              <span class="step-n">01</span>
+              <h3>Where the three minutes went</h3>
+              <p>None of these steps is hard. Every one of them is a person doing something a machine already knows. The typing is the worst of it — model, firmware, trial number, test number, four chances to introduce a typo into a file name that someone will search for later.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">02</span>
+              <h3>Three grills, three tests</h3>
+              <p>Multiply it by the standard practice and the session costs about half an hour. The API path costs one upload at the end, because the analysis has already happened for every grill by the time anyone looks. That is the 83%.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">03</span>
+              <h3>What was already there</h3>
+              <p>Thermocouples on the grate, the controller's own log, and a sequencer driving the whole profile. Two CSV files fall out at the end of every test. This half of the system was never the problem.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">04</span>
+              <h3>One request at the end of the test</h3>
+              <p>The sequencer runs a batch script when a test completes. That script sends both CSVs and the test metadata to an R Plumber API running in a Docker container on a Linux server. No interface, no typing, no transfer.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">05</span>
+              <h3>Three outputs, ready to attach</h3>
+              <p>A scored plot as an image, the graded results table as an image, and an interactive plotly page for anyone who wants to zoom in on a specific event. The same analysis code the Shiny app used — that was a hard requirement, because two copies of an analysis is two analyses.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">06</span>
+              <h3>What the scorecard scores</h3>
+              <p>The test walks the controller up a staircase of set points and holds at each one long enough to reach steady state. That commanded profile is the dashed line — the thing every measurement is judged against.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">07</span>
+              <h3>Two channels that disagree on purpose</h3>
+              <p>The controller probe sits near the fire and reads hot. The grate thermocouple sits where the food is, and it is the one the controller is actually tuned against. The gap between them is not an error — it is the number a cook cares about versus the number the grill thinks it is holding.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">08</span>
+              <h3>Every step has the same signature</h3>
+              <p>Command a step up, and the controller overshoots, then settles into a slow sawtooth as the auger cycles pellets in. The scorecard ignores the ramp entirely and measures the second half of each dwell, where the behaviour is steady enough to mean something.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card">
+              <span class="step-n">09</span>
+              <h3>A grade per set point</h3>
+              <p>Two numbers per step: how far the settled grate temperature sits from target, and how tightly it holds. The tolerance scales with the set point, because holding ±10°F at 500 is a much harder ask than at 225. On this unit the grades fall off at the top of the range — which is the finding, and exactly the kind of thing that used to depend on whoever was reading the plot that afternoon.</p>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h3>The graded table</h3>
+        <p>This is the second of the three outputs, rebuilt here from the synthetic trace above.</p>
+      </div>
+      <div class="table-wrap">
+        <div data-grades-table></div>
+        <p class="cap">Generated by <span class="mono">data/generators/gen_scorecard.py</span>. Grade thresholds scale with set point; stability is the standard deviation of the grate channel across the settled half of each dwell.</p>
+      </div>
+
+      <div class="prose">
+        <h3>The parts that fought back</h3>
+        <p>Development took a month, and most of it was not the analysis. A representative sample, because the polished version of this story is less useful than the real one:</p>
+        <ul>
+          <li><strong>Docker could not write to the host disk.</strong> Days of bind-mount and <span class="mono">--mount</span> syntax, no errors, no file. I stopped fighting it and changed the design instead: return the results in the HTTP response rather than saving them somewhere and telling the user where to look. That turned out to be the better architecture — the endpoint became stateless, which is why it has needed no maintenance since.</li>
+          <li><strong>PhantomJS.</strong> Rendering a styled table to an image needs a headless browser, and the standard R package wants PhantomJS, which will not install cleanly in the container. Two days lost before switching to <span class="mono">webshot2</span>, which uses headless Chrome instead. Immediate fix.</li>
+          <li><strong>Error 137.</strong> The plotly output died with a pandoc failure that turned out to be the OOM killer — the container's memory ceiling was too low for document conversion. Raise the allowance, done.</li>
+          <li><strong>Persistence.</strong> A container running in a terminal dies with the terminal. systemd made it a service that survives reboots and comes back on its own.</li>
+        </ul>
+        <p>None of that is glamorous, and all of it is the difference between a proof of concept and something the team still uses. I logged every one of these in the ticket as it happened, partly for the next person and partly because the dead ends are the part I would want to read.</p>
+      </div>
+
+      <blockquote class="pull">
+        Two copies of an analysis is two analyses.
+        <cite>Why the API points at the same code the app uses</cite>
+      </blockquote>
+    </section>
+
+    <!-- ============================ FUTURE ============================ -->
+    <section id="future">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">→</span> Future</p>
+        <h2>One endpoint per repetitive analysis</h2>
+        <p class="section-lede">The thermal scorecard is one test. The pattern underneath it — instrumented rig, HTTP request, analysis as a service — has nothing to do with thermal testing at all.</p>
+      </div>
+
+      <div class="prose">
+        <p>Everything the lab does looks like this: a rig produces files, a person runs a known analysis over them, and a result gets attached to a ticket. Each of those is an endpoint waiting to be written, and the second one is much cheaper than the first because the container, the hosting and the request pattern already exist.</p>
+
+        <p>The bigger prize is what happens when results stop being attachments. Right now every test produces images that live on a ticket, which means the fleet of tests we have run is not queryable. Writing results to a database instead would turn three years of thermal tests into a dataset: how does this model compare to its predecessor at 500°F, has controller behaviour drifted across firmware versions, which units were outliers and did they stay that way. That is a different class of question than any single scorecard can answer, and the API is the thing that makes it possible — every test that runs is already an insert waiting for a table.</p>
+
+        <p>The general version of the rule, which I would apply anywhere: <strong>if a team does the same analysis by hand more than once a week, that analysis wants to be an endpoint.</strong> The cost is a container and an afternoon. The return is every hour after that, plus a dataset you did not have before.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================ IMPACT ============================ -->
+  <section class="impact">
+    <div class="wrap">
+      <h2>Impact</h2>
+      <div class="impact-grid">
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="83" data-unit="%">0</span>
+          <p>Reduction in human time per test session — 30 minutes down to 5</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num">0</span>
+          <p>Manual data entry steps. The metadata comes from the rig that already has it</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num">3</span>
+          <p>Output formats returned per request: scored plot, graded table, interactive HTML</p>
+        </div>
+      </div>
+
+      <p class="stack-note">Built with</p>
+      <ul class="chips">
+        <li class="chip">R</li>
+        <li class="chip">Plumber</li>
+        <li class="chip">ggplot2 + plotly</li>
+        <li class="chip">Docker</li>
+        <li class="chip">systemd</li>
+        <li class="chip">Linux</li>
+        <li class="chip">DAQ / sequencer integration</li>
+      </ul>
+
+      <nav class="cs-nav" aria-label="Case studies">
+        <a href="../anatomy-of-a-dj-set/index.html">
+          <span class="dir">Previous</span>
+          <span class="ttl">Anatomy of a DJ set</span>
+        </a>
+        <a class="next" href="../woodridge-churn/index.html">
+          <span class="dir">Next</span>
+          <span class="ttl">Error trends & churn attribution</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer data-site-foot></footer>
+
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/lib/d3.v7.min.js"></script>
+<script src="../../assets/js/scrolly.js"></script>
+<script src="../../assets/js/charts/common.js"></script>
+<script src="../../assets/js/charts/scorecard.js"></script>
+</body>
+</html>
