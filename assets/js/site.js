@@ -130,6 +130,20 @@
     hide: function () { if (tipEl) tipEl.style.opacity = 0; }
   };
 
+  /* --- source links ------------------------------------------------------- */
+  /* Anything marked data-code="path" points into the repo on GitHub rather than
+     at this host: Pages serves .py as a raw download and 404s on a directory,
+     so neither does the job of "go and read this". The markup carries a working
+     absolute href too, so this only keeps it in sync — it is not required. */
+  function wireCodeLinks() {
+    [].forEach.call(document.querySelectorAll('[data-code]'), function (a) {
+      var path = a.getAttribute('data-code');
+      var dir = path.slice(-1) === '/';
+      a.href = (dir ? S.treeBase : S.codeBase) + path;
+      a.setAttribute('rel', 'noopener');
+    });
+  }
+
   /* --- sticky offsets ----------------------------------------------------- */
   /* The header and the frame rail are both sticky, and both change height with
      the viewport. Hard-coding their offsets in CSS breaks the moment the nav
@@ -156,6 +170,7 @@
     renderFooter();
     initCounters();
     stampYear();
+    wireCodeLinks();
     measureSticky();
     window.addEventListener('resize', measureSticky, { passive: true });
     // Web fonts land after first paint and change the header's height.
