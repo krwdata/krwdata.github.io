@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KW">
+  <rect width="64" height="64" fill="#1C1E20"/>
+  <!-- A rising trace: the shape every chart on the site is made of. -->
+  <path d="M8 46 L20 46 L20 34 L32 34 L32 24 L44 24 L44 14 L56 14"
+        fill="none" stroke="#D95E16" stroke-width="6"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
