@@ -1,0 +1,1 @@
+{"meta":{"synthetic":true,"seed":90000090,"note":"Computed by running k-means on the generated sample."},"rows":[{"k":2,"wss":6155.0},{"k":3,"wss":4225.1},{"k":4,"wss":2914.2},{"k":5,"wss":2307.3},{"k":6,"wss":1891.4},{"k":7,"wss":1775.2},{"k":8,"wss":1658.3}]}
