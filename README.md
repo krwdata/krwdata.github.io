@@ -129,6 +129,27 @@ git-ignored. See `dj-data/README.md` for how to refresh it.
 
 ---
 
+## Colour
+
+Five brand colours — tiger orange `#F88714`, crimson violet `#720E3D`, deep pink
+`#E14FAD`, onyx `#141516`, scarlet fire `#F0401B` — declared once at the top of
+`assets/css/theme.css` and derived from there.
+
+Two things in that file are worth knowing before changing a colour:
+
+- **The orange does not do the same job on both surfaces.** It is brilliant on
+  onyx and only 2.2:1 on paper, so there are three accent tokens: `--accent`
+  for chrome on dark, `--accent-mark` for marks on either surface, and
+  `--accent-ink` (the crimson, ~10:1) for accent *text* on light.
+- **The six chart slots were validated, not chosen.** They clear the lightness
+  band, the chroma floor, adjacent-pair separation under simulated protanopia
+  and deuteranopia, and contrast — against the light paper *and* the dark panel.
+  Four warm brand hues cannot carry six categories: under colour-blindness
+  simulation they collapse into each other, so blue, gold and teal are added as
+  the smallest set that clears the gates while keeping orange, pink and crimson
+  in the first slots. Status colours (`--good` / `--warn` / `--bad`) are
+  reserved and never used for a series.
+
 ## Accessibility & performance notes
 
 - Every page has a skip link, landmark elements and labelled navigation.
@@ -141,6 +162,9 @@ git-ignored. See `dj-data/README.md` for how to refresh it.
   full width above their step text below the same breakpoint.
 - Sticky offsets are measured at runtime rather than hard-coded, so the layout
   survives the header wrapping on small screens.
+- No chart depends on colour alone: every multi-series figure carries a legend,
+  the focused series is directly labelled, and the underlying numbers appear in
+  a table or in the prose.
 
 ---
 

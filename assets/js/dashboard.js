@@ -41,7 +41,7 @@
           .y(function (d) { return y(d.set); }).curve(d3.curveStepAfter));
 
       var p = f.g.append('path').datum(rows)
-        .attr('class', 'series-line').attr('stroke', 'var(--ember)').attr('stroke-width', 1.8)
+        .attr('class', 'series-line').attr('stroke', 'var(--accent)').attr('stroke-width', 1.8)
         .attr('d', d3.line().x(function (d) { return x(d.t); })
           .y(function (d) { return y(d.grate); }));
       whenVisible(el, function () { CH.drawIn(p, 1600); });
@@ -68,7 +68,7 @@
       var paths = cats.map(function (c) {
         var data = rows.filter(function (d) { return d.category === c; });
         return f.g.append('path').datum(data).attr('class', 'series-line')
-          .attr('stroke', c === 'RTD' ? 'var(--ember)' : 'var(--ash-dim)')
+          .attr('stroke', c === 'RTD' ? 'var(--accent)' : 'var(--ash-dim)')
           .attr('stroke-width', c === 'RTD' ? 1.9 : 1)
           .attr('opacity', c === 'RTD' ? 1 : 0.45)
           .attr('d', line);
@@ -115,7 +115,9 @@
       var R = Math.min(f.iw, f.ih) / 2 - 2;
       var g = f.g.append('g').attr('transform', 'translate(' + f.iw / 2 + ',' + f.ih / 2 + ')');
       var rings = { B: [R * 0.66, R], A: [R * 0.32, R * 0.66] };
-      var op = d3.scaleSqrt().domain([0, d3.max(wheel, function (d) { return d.tracks; })]).range([0.08, 1]);
+      // Floor is well above zero: a near-transparent orange over the panel reads
+      // as mud rather than as a low count.
+      var op = d3.scaleSqrt().domain([0, d3.max(wheel, function (d) { return d.tracks; })]).range([0.16, 1]);
       var arc = d3.arc().padAngle(0.02).cornerRadius(1);
 
       var w = g.selectAll('path').data(wheel).enter().append('path')
@@ -128,7 +130,9 @@
             startAngle: a - Math.PI / 12, endAngle: a + Math.PI / 12
           });
         })
-        .attr('fill', 'var(--ember)')
+        .attr('fill', function (d) {
+          return d.camelot.slice(-1) === 'B' ? 'var(--accent)' : 'var(--pink)';
+        })
         .attr('fill-opacity', 0)
         .attr('stroke', 'var(--panel)').attr('stroke-width', 0.8);
 

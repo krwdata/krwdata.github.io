@@ -5,7 +5,7 @@
 /* --- hero ----------------------------------------------------------------- */
 .hero { padding: clamp(38px, 6vw, 78px) 0 clamp(24px, 3vw, 38px); }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 60px); align-items: end; }
-.hero h1 { margin-bottom: 18px; max-width: 15ch; }
+.hero h1 { margin-bottom: 18px; max-width: 19ch; }
 .hero h1 .rule-out { color: var(--ash-dim); }
 .hero-lede { color: var(--ash); font-size: clamp(15px, 1.35vw, 17.5px); max-width: 52ch; margin: 0; }
 .hero-lede strong { color: var(--offwhite); font-weight: 600; }
@@ -17,9 +17,9 @@
   padding: 10px 16px; border: 1px solid var(--rule); color: var(--offwhite);
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
-.btn:hover, .btn:focus-visible { border-color: var(--ember); color: var(--ember); }
-.btn-primary { background: var(--ember); border-color: var(--ember); color: #fff; }
-.btn-primary:hover, .btn-primary:focus-visible { background: var(--ember-hi); border-color: var(--ember-hi); color: #fff; }
+.btn:hover, .btn:focus-visible { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover, .btn-primary:focus-visible { background: var(--accent-hi); border-color: var(--accent-hi); color: #fff; }
 
 /* --- stat ticker ---------------------------------------------------------- */
 .ticker {
@@ -32,12 +32,12 @@
   font-family: var(--font-display); font-size: clamp(26px, 3.4vw, 44px);
   line-height: 1; letter-spacing: -0.02em; display: block;
 }
-.stat-value .unit { font-size: .52em; color: var(--ember); margin-left: 2px; }
+.stat-value .unit { font-size: .52em; color: var(--accent); margin-left: 2px; }
 .stat-label {
   display: block; margin-top: 9px; font-family: var(--font-mono); font-size: 10px;
   letter-spacing: .12em; text-transform: uppercase; color: var(--ash-dim); line-height: 1.5;
 }
-.ticker-cell[data-kind="outcome"] .stat-value { color: var(--ember); }
+.ticker-cell[data-kind="outcome"] .stat-value { color: var(--accent); }
 
 /* --- panel grid ----------------------------------------------------------- */
 .panels-head {
@@ -57,14 +57,14 @@
 .panel--full { grid-column: span 6; }
 .panel--four { grid-column: span 4; }
 
-a.panel:hover, a.panel:focus-visible { border-color: var(--ember); transform: translateY(-3px); background: var(--panel-hi); }
-a.panel:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+a.panel:hover, a.panel:focus-visible { border-color: var(--accent); transform: translateY(-3px); background: var(--panel-hi); }
+a.panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* The whole tile is the click target; the arrow just signals it. */
 a.panel::after {
   content: '→'; position: absolute; right: 20px; bottom: 18px; color: var(--ash-dim);
   font-size: 17px; transition: transform var(--t-mid), color var(--t-mid);
 }
-a.panel:hover::after, a.panel:focus-visible::after { color: var(--ember); transform: translateX(4px); }
+a.panel:hover::after, a.panel:focus-visible::after { color: var(--accent); transform: translateX(4px); }
 
 .panel-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 4px; }
 .panel-idx { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; color: var(--ash-dim); }
@@ -76,8 +76,8 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--ember); transf
 .panel-viz svg { width: 100%; height: auto; overflow: visible; }
 
 .panel-outcome {
-  color: var(--ember); font-size: 14px; font-weight: 600; line-height: 1.45;
-  border-left: 2px solid var(--ember); padding-left: 12px; margin: 0 0 16px;
+  color: var(--accent); font-size: 14px; font-weight: 600; line-height: 1.45;
+  border-left: 2px solid var(--accent); padding-left: 12px; margin: 0 0 16px;
 }
 .panel .chips { margin-top: auto; padding-right: 34px; }
 
@@ -85,7 +85,7 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--ember); transf
 .about-grid { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); gap: clamp(18px, 2.4vw, 34px); align-items: start; }
 .portrait {
   width: 150px; aspect-ratio: 1; border: 1px solid var(--rule); border-radius: var(--radius);
-  overflow: hidden; background: var(--soot-deep); position: relative; flex: none;
+  overflow: hidden; background: var(--onyx-deep); position: relative; flex: none;
 }
 .portrait img {
   width: 100%; height: 100%; object-fit: cover;
@@ -95,8 +95,8 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--ember); transf
 }
 .portrait:hover img { filter: grayscale(.15) contrast(1.02) brightness(1); }
 .portrait::after {
-  content: ''; position: absolute; inset: 0; background: var(--ember);
-  mix-blend-mode: color; opacity: .17; pointer-events: none; transition: opacity var(--t-slow);
+  content: ''; position: absolute; inset: 0; background: var(--crimson);
+  mix-blend-mode: color; opacity: .55; pointer-events: none; transition: opacity var(--t-slow);
 }
 .portrait:hover::after { opacity: 0; }
 .portrait-cap { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ash-dim); margin-top: 8px; }
@@ -119,8 +119,8 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--ember); transf
 
 /* Note strip explaining the synthetic data — credibility, not fine print. */
 .disclosure {
-  border: 1px solid var(--rule); border-left: 2px solid var(--ember);
-  background: rgba(217,94,22,.04); padding: 16px 20px; margin-bottom: clamp(30px, 5vw, 54px);
+  border: 1px solid var(--rule); border-left: 2px solid var(--accent);
+  background: rgba(248,135,20,.05); padding: 16px 20px; margin-bottom: clamp(30px, 5vw, 54px);
   font-size: 13.5px; color: var(--ash); line-height: 1.6;
 }
 .disclosure strong { color: var(--offwhite); }

@@ -9,7 +9,7 @@
   var B = document.documentElement.getAttribute('data-base') || '';
   var D = {};
   var SEG_COLOR = {};
-  var PAL = ['#D95E16', '#8E9BA6', '#6E6863', '#A8877A', '#56606B', '#8B7E5E'];
+  var PAL = CH.PALETTE;
 
   /* ======================================================================
      1. ROLLUP — five million rows become six groups
@@ -27,7 +27,7 @@
       .attr('transform', function (d) { return 'translate(0,' + y(d.label) + ')'; });
 
     g.append('rect').attr('height', y.bandwidth()).attr('rx', 2).attr('width', 0)
-      .attr('fill', function (d, i) { return i === rows.length - 1 ? 'var(--ember)' : 'var(--series-2)'; })
+      .attr('fill', function (d, i) { return i === rows.length - 1 ? 'var(--accent-mark)' : 'var(--neutral)'; })
       .attr('opacity', function (d, i) { return i === rows.length - 1 ? 1 : 0.3 + i * 0.08; });
 
     g.append('text').attr('class', 'annot-label').attr('y', -10).style('font-size', '12.5px')
@@ -72,7 +72,7 @@
       .attr('transform', 'rotate(-90)').attr('x', 0).attr('y', -42).attr('text-anchor', 'end');
 
     var dots = f.g.append('g').selectAll('circle').data(rows).enter().append('circle')
-      .attr('r', 2.9).attr('fill', 'var(--series-3)').attr('opacity', 0.5)
+      .attr('r', 2.9).attr('fill', 'var(--neutral)').attr('opacity', 0.5)
       .style('cursor', 'crosshair');
 
     dots.on('mousemove', function (evt, d) {
@@ -156,8 +156,8 @@
 
       dots.transition().duration(dur)
         .attr('fill', function (d) {
-          if (!s.color) return 'var(--series-3)';
-          if (s.focus && d.segment !== s.focus) return 'var(--series-3)';
+          if (!s.color) return 'var(--neutral)';
+          if (s.focus && d.segment !== s.focus) return 'var(--neutral)';
           return SEG_COLOR[d.segment];
         })
         .attr('opacity', function (d) {
@@ -206,7 +206,7 @@
       .attr('d', line).style('opacity', 0);
     var pts = f.g.selectAll('circle').data(rows).enter().append('circle')
       .attr('cx', function (d) { return x(d.k); }).attr('cy', function (d) { return y(d.wss); })
-      .attr('r', 4).attr('fill', 'var(--ember)').style('opacity', 0);
+      .attr('r', 4).attr('fill', 'var(--accent-mark)').style('opacity', 0);
     var annotG = f.g.append('g');
 
     var drawn = false;

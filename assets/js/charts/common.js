@@ -42,7 +42,7 @@
     var sel = g.selectAll('g.' + (o.key ? 'annot-' + o.key : 'annot')).data([o]);
     var enter = sel.enter().append('g').attr('class', cls);
     enter.append('line').attr('class', 'annot-line');
-    enter.append('circle').attr('r', 3.5).attr('fill', 'var(--ember)');
+    enter.append('circle').attr('r', 3.5).attr('fill', 'var(--accent-mark)');
     enter.append('text').attr('class', 'annot-label');
     enter.append('text').attr('class', 'annot-sub');
     var node = enter.merge(sel);
@@ -102,9 +102,21 @@
     }
   };
 
-  /* Chart series colours. One ember highlight, the rest desaturated — the
-     palette does the ranking work so the reader doesn't have to. */
-  var PALETTE = ['#D95E16', '#8E9BA6', '#6E6863', '#A8877A', '#56606B', '#8B7E5E'];
+  /* Chart series colours: the six categorical slots, in fixed order, mirroring
+     --series-1..6 in theme.css. Validated with the palette checker for the
+     lightness band, chroma floor, adjacent-pair separation under protanopia
+     and deuteranopia, and contrast — against the light paper AND the dark
+     panel, so one palette serves both surfaces.
+
+     Note the cap: adjacent-pair separation is the right gate for lines and
+     bars, where only neighbours touch. A scatter needs ALL pairs separable and
+     six series cannot clear that at any ordering — the segmentation cloud
+     leans on its legend, its per-segment focus steps and the profile table
+     underneath to carry identity, rather than on colour alone. */
+  var PALETTE = ['#E0700A', '#4A93D6', '#D3468F', '#B08E18', '#B03A70', '#22A8AE'];
+
+  /* Not a slot: the fill for anything deliberately recessive. */
+  var NEUTRAL = '#6B7684';
 
   function loadJSON(paths) {
     return Promise.all(paths.map(function (p) {
@@ -132,7 +144,7 @@
 
   window.CH = {
     frame: frame, annotate: annotate, show: show, drawIn: drawIn,
-    fmt: fmt, PALETTE: PALETTE, DUR: DUR, reduced: reduced,
+    fmt: fmt, PALETTE: PALETTE, NEUTRAL: NEUTRAL, DUR: DUR, reduced: reduced,
     loadJSON: loadJSON, loadFail: loadFail
   };
 })();

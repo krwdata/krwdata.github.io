@@ -55,19 +55,19 @@
       .attr('y', y('manual')).attr('height', y.bandwidth())
       .attr('x', function (d) { return x(d.x0); })
       .attr('width', 0)
-      .attr('fill', 'var(--series-2)')
+      .attr('fill', 'var(--neutral)')
       .attr('opacity', function (d, i) { return 0.9 - i * 0.11; })
-      .attr('stroke', '#FFFDFB').attr('stroke-width', 1);
+      .attr('stroke', 'var(--paper)').attr('stroke-width', 1);
 
     var manualTail = f.g.append('rect')
       .attr('y', y('manual')).attr('height', y.bandwidth())
       .attr('x', x(perTest)).attr('width', 0)
-      .attr('fill', 'var(--series-3)').attr('opacity', 0.35);
+      .attr('fill', 'var(--neutral)').attr('opacity', 0.3);
 
     var apiBar = f.g.append('rect')
       .attr('y', y('api')).attr('height', y.bandwidth())
       .attr('x', 0).attr('width', 0)
-      .attr('fill', 'var(--ember)');
+      .attr('fill', 'var(--accent-mark)');
 
     var manualLab = f.g.append('text').attr('class', 'annot-label')
       .attr('y', y('manual') + y.bandwidth() / 2).attr('dy', '0.32em').style('opacity', 0);
@@ -81,7 +81,7 @@
       .attr('transform', function (d, i) { return 'translate(0,' + (listY + i * 20) + ')'; })
       .style('opacity', 0);
     list.append('rect').attr('width', 9).attr('height', 9).attr('y', -8)
-      .attr('fill', 'var(--series-2)')
+      .attr('fill', 'var(--neutral)')
       .attr('opacity', function (d, i) { return 0.9 - i * 0.11; });
     list.append('text').attr('class', 'annot-sub').attr('x', 16).style('font-size', '12px')
       .text(function (d) { return d.label; });
@@ -174,8 +174,8 @@
       .style('opacity', 0);
     nodes.append('rect')
       .attr('x', -W / 2).attr('y', -H / 2).attr('width', W).attr('height', H).attr('rx', 2)
-      .attr('fill', function (d) { return d.group === 2 ? 'var(--ember)' : '#FFFDFB'; })
-      .attr('stroke', function (d) { return d.group === 2 ? 'var(--ember)' : 'var(--rule-lite)'; })
+      .attr('fill', function (d) { return d.group === 2 ? 'var(--accent-mark)' : 'var(--paper)'; })
+      .attr('stroke', function (d) { return d.group === 2 ? 'var(--accent-mark)' : 'var(--rule-lite)'; })
       .attr('stroke-width', 1.4);
     nodes.append('text').attr('class', 'annot-label')
       .attr('text-anchor', 'middle').attr('y', -3).style('font-size', '12px')
@@ -223,15 +223,17 @@
       .attr('stroke', 'var(--ink)').attr('stroke-width', 1.4)
       .attr('stroke-dasharray', '5 3').style('opacity', 0);
     var pGrill = f.g.append('path').datum(rows).attr('class', 'series-line')
-      .attr('stroke', 'var(--series-2)').attr('stroke-width', 1.5).style('opacity', 0);
+      .attr('stroke', 'var(--neutral)').attr('stroke-width', 1.5).style('opacity', 0);
     var pGrate = f.g.append('path').datum(rows).attr('class', 'series-line')
-      .attr('stroke', 'var(--ember)').attr('stroke-width', 2.1).style('opacity', 0);
+      .attr('stroke', 'var(--series-1)').attr('stroke-width', 2.1).style('opacity', 0);
 
     var gradeG = f.g.append('g').style('opacity', 0);
     var gradeMarks = gradeG.selectAll('g').data(grades).enter().append('g');
     gradeMarks.append('rect').attr('width', 22).attr('height', 20).attr('rx', 2)
+      // Status colours, not series colours — and the letter itself is the
+      // label, so the grade never depends on colour alone.
       .attr('fill', function (d) {
-        return d.grade === 'A' ? 'var(--good)' : d.grade === 'B' ? 'var(--series-2)' : 'var(--ember)';
+        return d.grade === 'A' ? 'var(--good)' : d.grade === 'B' ? 'var(--warn)' : 'var(--bad)';
       });
     gradeMarks.append('text').attr('class', 'annot-label').style('fill', '#fff')
       .attr('x', 11).attr('y', 14).attr('text-anchor', 'middle').style('font-size', '12px')
@@ -242,8 +244,8 @@
     var legendEl = el.closest('figure').querySelector('[data-legend]');
     if (legendEl) {
       legendEl.innerHTML =
-        '<span class="legend-item"><span class="legend-swatch" style="background:var(--ember)"></span>Grate (cooking surface)</span>' +
-        '<span class="legend-item"><span class="legend-swatch" style="background:var(--series-2)"></span>Grill (controller probe)</span>' +
+        '<span class="legend-item"><span class="legend-swatch" style="background:var(--series-1)"></span>Grate (cooking surface)</span>' +
+        '<span class="legend-item"><span class="legend-swatch" style="background:var(--neutral)"></span>Grill (controller probe)</span>' +
         '<span class="legend-item"><span class="legend-swatch" style="background:var(--ink)"></span>Set point</span>';
     }
 

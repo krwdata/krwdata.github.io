@@ -12,9 +12,14 @@
 
   var B = document.documentElement.getAttribute('data-base') || '';
   var CATS = ['RTD', 'IGNITOR', 'HIGH_TEMP', 'FAN', 'AUGER'];
+  /* Slots 1,2,3,4,6 of the categorical palette. The temperature sensor keeps
+     slot 1 because it is the series the story is about; the others are still
+     given real hues rather than five greys, because the legend maps colour to
+     category and five greys cannot do that. Focus is expressed through opacity
+     and stroke weight instead. */
   var COLOR = {
-    RTD: '#D95E16', IGNITOR: '#8E9BA6', HIGH_TEMP: '#A8877A',
-    FAN: '#56606B', AUGER: '#8B7E5E'
+    RTD: '#E0700A', IGNITOR: '#4A93D6', HIGH_TEMP: '#D3468F',
+    FAN: '#B08E18', AUGER: '#22A8AE'
   };
   var LABEL = {
     RTD: 'Temp sensor (RTD)', IGNITOR: 'Igniter', HIGH_TEMP: 'High temp',
@@ -225,7 +230,7 @@
     // The week boundary itself.
     var bg = f.g.append('g');
     bg.append('rect').attr('x', 0).attr('y', -10).attr('width', x(boundary))
-      .attr('height', f.ih + 10).attr('fill', 'var(--ember)').attr('opacity', 0.04);
+      .attr('height', f.ih + 10).attr('fill', 'var(--accent-mark)').attr('opacity', 0.05);
     bg.append('line').attr('x1', x(boundary)).attr('x2', x(boundary))
       .attr('y1', -14).attr('y2', f.ih).attr('stroke', 'var(--ink)').attr('stroke-width', 1.5);
     bg.append('text').attr('class', 'chart-sub').attr('x', x(boundary) - 6).attr('y', -18)
@@ -241,7 +246,7 @@
       .attr('x', function (d) { return x(new Date(d.start)); })
       .attr('width', function (d) { return Math.max(3, x(new Date(d.end)) - x(new Date(d.start))); })
       .attr('height', yb.bandwidth()).attr('rx', 2)
-      .attr('fill', 'var(--series-2)').attr('opacity', 0.5);
+      .attr('fill', 'var(--neutral)').attr('opacity', 0.5);
 
     // Where the denominator counts the cook: its start.
     g.append('circle').attr('class', 'start-dot')
@@ -253,13 +258,13 @@
     g.append('circle').attr('class', 'alert-dot')
       .attr('cx', function (d) { return x(new Date(d.alert)); })
       .attr('cy', yb.bandwidth() / 2).attr('r', 4.5)
-      .attr('fill', 'var(--ember)').style('opacity', 0);
+      .attr('fill', 'var(--accent-mark)').style('opacity', 0);
 
     g.append('line').attr('class', 'link')
       .attr('x1', function (d) { return x(new Date(d.start)); })
       .attr('x2', function (d) { return x(new Date(d.alert)); })
       .attr('y1', yb.bandwidth() / 2).attr('y2', yb.bandwidth() / 2)
-      .attr('stroke', 'var(--ember)').attr('stroke-width', 1.5)
+      .attr('stroke', 'var(--accent-mark)').attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '3 2').style('opacity', 0);
 
     var note = f.g.append('text').attr('class', 'annot-sub')
@@ -274,8 +279,8 @@
 
       g.select('.bar').transition().duration(dur)
         .attr('fill', function (d) {
-          if (mode === 'split' && d.straddles) return 'var(--ember)';
-          return 'var(--series-2)';
+          if (mode === 'split' && d.straddles) return 'var(--accent-mark)';
+          return 'var(--neutral)';
         })
         .attr('opacity', function (d) {
           if (mode === 'split') return d.straddles ? 0.28 : 0.35;
@@ -307,7 +312,7 @@
 
     g.append('rect').attr('height', y.bandwidth()).attr('rx', 2)
       .attr('width', 0)
-      .attr('fill', function (d, i) { return i === rows.length - 1 ? 'var(--ember)' : 'var(--series-2)'; })
+      .attr('fill', function (d, i) { return i === rows.length - 1 ? 'var(--accent-mark)' : 'var(--neutral)'; })
       .attr('opacity', function (d, i) { return i === rows.length - 1 ? 1 : 0.32; });
 
     g.append('text').attr('class', 'annot-label').attr('x', 0).attr('y', -8)
@@ -358,7 +363,7 @@
     g.append('rect')
       .attr('y', function (d) { return y(d.label); })
       .attr('height', y.bandwidth()).attr('rx', 2).attr('width', 0)
-      .attr('fill', function (d, i) { return i < 2 ? 'var(--ember)' : 'var(--series-2)'; })
+      .attr('fill', function (d, i) { return i < 2 ? 'var(--accent-mark)' : 'var(--neutral)'; })
       .attr('opacity', function (d, i) { return i < 2 ? 1 : 0.45; });
     g.append('text').attr('class', 'annot-sub')
       .attr('y', function (d) { return y(d.label) + y.bandwidth() / 2; })

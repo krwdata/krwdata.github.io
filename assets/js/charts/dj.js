@@ -17,9 +17,11 @@
     energy: 'Two steps up (energy lift)',
     clash: 'Off the wheel'
   };
+  /* The four compatible moves take categorical slots; "off the wheel" is the
+     residual bucket, so it takes the neutral rather than a fifth identity. */
   var MOVE_COLOR = {
-    same: '#D95E16', adjacent: '#E08A4E', relative: '#A8877A',
-    energy: '#8B7E5E', clash: '#56606B'
+    same: '#E0700A', adjacent: '#D3468F', relative: '#B03A70',
+    energy: '#B08E18', clash: '#6B7684'
   };
 
   function camelotPos(c) {
@@ -58,9 +60,13 @@
           endAngle: p.angle + Math.PI / 2 + Math.PI / 12
         });
       })
-      .attr('fill', 'var(--ember)')
+      // Outer ring is major, inner ring minor — colour says the same thing the
+      // geometry does, which is what makes the wheel readable at a glance.
+      .attr('fill', function (d) {
+        return d.camelot.slice(-1) === 'B' ? 'var(--series-1)' : 'var(--series-3)';
+      })
       .attr('fill-opacity', function (d) { return opacity(d.tracks); })
-      .attr('stroke', '#FFFDFB').attr('stroke-width', 1)
+      .attr('stroke', 'var(--paper)').attr('stroke-width', 1)
       .style('cursor', 'pointer')
       .on('mousemove', function (evt, d) {
         Tip.show('<span class="tip-k">' + d.camelot + ' · ' +
@@ -169,12 +175,12 @@
     var line = d3.line().x(function (d) { return x(d.clock); }).y(function (d) { return y(d.bpm); })
       .curve(d3.curveMonotoneX);
     var trend = f.g.append('path').datum(smooth).attr('class', 'series-line')
-      .attr('stroke', 'var(--ember)').attr('stroke-width', 2.4).attr('d', line).style('opacity', 0);
+      .attr('stroke', 'var(--series-1)').attr('stroke-width', 2.4).attr('d', line).style('opacity', 0);
 
     var dots = f.g.append('g').selectAll('circle').data(tracks).enter().append('circle')
       .attr('cx', function (d) { return x(d.clock); })
       .attr('cy', function (d) { return y(d.bpm); })
-      .attr('r', 3).attr('fill', 'var(--series-2)').attr('opacity', 0)
+      .attr('r', 3).attr('fill', 'var(--neutral)').attr('opacity', 0)
       .style('cursor', 'pointer')
       .on('mousemove', function (evt, d) {
         Tip.show('<span class="tip-k">' + d3.timeFormat('%H:%M')(d.clock) +
@@ -194,7 +200,7 @@
       dots.transition().duration(dur)
         .attr('fill', function (d) {
           return s.mark && d.title.toLowerCase().indexOf(s.mark.toLowerCase()) === 0
-            ? 'var(--ember)' : 'var(--series-2)';
+            ? 'var(--accent-mark)' : 'var(--neutral)';
         })
         .attr('r', function (d) {
           return s.mark && d.title.toLowerCase().indexOf(s.mark.toLowerCase()) === 0 ? 6 : 3;
