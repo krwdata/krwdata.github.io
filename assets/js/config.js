@@ -9,14 +9,14 @@ window.SITE = {
   email: 'kylewoodsdata@gmail.com',
   linkedin: 'https://linkedin.com/in/kyle-woods-data/',
   linkedinLabel: 'linkedin.com/in/kyle-woods-data',
-  github: 'https://github.com/kylerobert425',
-  githubLabel: 'github.com/kylerobert425',
-  repo: 'https://github.com/kylerobert425/kylerobert425.github.io',
+  github: 'https://github.com/krwdata',
+  githubLabel: 'github.com/krwdata',
+  repo: 'https://github.com/krwdata/krwdata.github.io',
   // Where source links point. GitHub renders Python with highlighting; the
   // Pages host serves .py as raw text and 404s on directories, so "go read
   // the code" links have to leave the site.
-  codeBase: 'https://github.com/kylerobert425/kylerobert425.github.io/blob/main/',
-  treeBase: 'https://github.com/kylerobert425/kylerobert425.github.io/tree/main/',
+  codeBase: 'https://github.com/krwdata/krwdata.github.io/blob/main/',
+  treeBase: 'https://github.com/krwdata/krwdata.github.io/tree/main/',
   resume: 'resume/KW_Analytics_Engineer.pdf',
 
   // Set to false to hide the "open to work" indicator in the header.

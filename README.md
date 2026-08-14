@@ -1,4 +1,4 @@
-# kylerobert425.github.io
+# krwdata.github.io
 
 Portfolio for **Kyle Woods** — Data Analyst & Analytics Engineer, Salt Lake City.
 
@@ -7,7 +7,7 @@ Vanilla HTML, CSS and D3. No framework, no build step, no dependencies to
 install — the only third-party file in the repo is `d3.v7.min.js`, vendored
 locally so the site works offline.
 
-Live at **https://kylerobert425.github.io**
+Live at **https://krwdata.github.io**
 
 ---
 
@@ -17,7 +17,7 @@ Charts load their data with `fetch()`, which browsers block on `file://`. So
 you need a server — any server. Python has one built in:
 
 ```bash
-cd kylerobert425.github.io
+cd krwdata.github.io
 python3 -m http.server 8000
 ```
 
@@ -33,7 +33,7 @@ charts just replace themselves with a note telling you to start a server.)
 This repo is named `<username>.github.io`, so GitHub Pages serves it from the
 root of the default branch. One-time setup:
 
-1. Create a public repo called **`kylerobert425.github.io`**.
+1. Create a public repo called **`krwdata.github.io`**.
 2. Push this directory to it.
 3. **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`.**
 
@@ -42,8 +42,8 @@ That's it. Every push to `main` republishes within a minute or two. The
 would otherwise ignore anything beginning with an underscore.
 
 ```bash
-cd kylerobert425.github.io
-git remote add origin git@github.com:kylerobert425/kylerobert425.github.io.git
+cd krwdata.github.io
+git remote add origin git@github.com:krwdata/krwdata.github.io.git
 git branch -M main
 git push -u origin main
 ```
