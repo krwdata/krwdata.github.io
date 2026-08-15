@@ -357,6 +357,121 @@
       '</tr></thead><tbody>' + rows + '</tbody></table>';
   }
 
+  /* ======================================================================
+     HEAT MAP — the third output. A 3 x 5 thermocouple grid across the cooking
+     surface, stepped through the whole profile.
+
+     The real report prints one panel per set point with the temperature
+     written in every cell. Here it is a single grid that animates through the
+     staircase instead, and the numbers are gone on purpose: fifteen numbers
+     changing six times is a table pretending to be an animation, and nobody
+     reads it. What the plot is actually for is the SHAPE — cool on the right,
+     and a spread that widens as the grill gets hotter — and shape is what
+     survives when you take the digits away.
+
+     Colour is a fixed ±25°F window centred on THAT GRID'S OWN MEAN, and both
+     halves of that matter.
+
+     Centred on the mean, not the set point, because this plot answers "is the
+     grate even", not "did it hit the number". Accuracy already has two homes
+     on this page — the trace and the grades table — and this grill runs about
+     20°F under at the top of its range, so centring on the set point painted
+     the entire 500°F grid blue. That reads as "the grill is cold" and buries
+     the gradient, which is the one thing the map is for.
+
+     Fixed window, not per-grid, because re-normalising each step would make
+     every set point look equally uneven and hide the finding. At ±25°F a grid
+     spanning 8°F sits almost white and one spanning 41°F reaches both ends of
+     the ramp, so the spread grows in front of you as it climbs.
+     ====================================================================== */
+  function makeHeatmap(el) {
+    var f = CH.frame(el, { top: 16, right: 18, bottom: 46, left: 18 });
+    var meta = D.heat.meta, grids = D.heat.grids;
+    var nR = meta.rows, nC = meta.cols;
+
+    var legendH = 30, footH = 26;
+    var gridH = f.ih - legendH - footH;
+    var gap = 5;
+    var cw = (f.iw - gap * (nC - 1)) / nC;
+    var ch = (gridH - gap * (nR - 1)) / nR;
+
+    var gridG = f.g.append('g');
+    var cells = gridG.selectAll('rect').data(grids[0].cells).enter().append('rect')
+      .attr('x', function (d) { return d.c * (cw + gap); })
+      .attr('y', function (d) { return d.r * (ch + gap); })
+      .attr('width', cw).attr('height', ch).attr('rx', 2)
+      .attr('fill', '#EEE')
+      .attr('stroke', 'var(--rule-lite)').attr('stroke-width', 0.5);
+
+    // Blue = below set point, red = above. interpolateRdBu runs red->blue, so
+    // it is inverted here.
+    function scaleFor(mean) {
+      return d3.scaleDiverging(function (t) { return d3.interpolateRdBu(1 - t); })
+        .domain([mean - 25, mean, mean + 25]);
+    }
+
+    f.g.append('text').attr('class', 'chart-sub')
+      .attr('x', f.iw / 2).attr('y', gridH + 17).attr('text-anchor', 'middle')
+      .text('FRONT OF GRILL');
+
+    // Readout: the only numbers left, and they are the two that matter.
+    var readSet = f.g.append('text').attr('class', 'annot-label')
+      .attr('x', 0).attr('y', f.ih - 6).style('font-size', '15px');
+    var readDelta = f.g.append('text').attr('class', 'annot-sub')
+      .attr('x', f.iw).attr('y', f.ih - 6).attr('text-anchor', 'end')
+      .style('font-size', '12.5px');
+
+    // A ramp so "blue is cooler" needs no caption.
+    var lw = 120, lx = f.iw / 2 - lw / 2, ly = f.ih - 18;
+    var gradId = 'sc-heat-ramp';
+    var grad = f.svg.append('defs').append('linearGradient')
+      .attr('id', gradId).attr('x1', '0%').attr('x2', '100%');
+    [0, .25, .5, .75, 1].forEach(function (t) {
+      grad.append('stop').attr('offset', (t * 100) + '%')
+        .attr('stop-color', d3.interpolateRdBu(1 - t));
+    });
+    f.g.append('rect').attr('x', lx).attr('y', ly).attr('width', lw).attr('height', 6)
+      .attr('rx', 3).attr('fill', 'url(#' + gradId + ')');
+    f.g.append('text').attr('class', 'chart-sub').attr('x', lx - 8).attr('y', ly + 6)
+      .attr('text-anchor', 'end').style('font-size', '9px').text('COOLER');
+    f.g.append('text').attr('class', 'chart-sub').attr('x', lx + lw + 8).attr('y', ly + 6)
+      .style('font-size', '9px').text('HOTTER');
+
+    var timer = null, idx = 0;
+
+    function paint(i, dur) {
+      var g = grids[i], sc = scaleFor(g.avg);
+      var byKey = {};
+      g.cells.forEach(function (d) { byKey[d.r + ':' + d.c] = d.t; });
+      cells.transition().duration(dur).ease(d3.easeCubicInOut)
+        .attr('fill', function (d) { return sc(byKey[d.r + ':' + d.c]); });
+      readSet.text(g.set + '°F set point');
+      readDelta.text(g.delta + '°F across the grate');
+    }
+
+    function stop() { if (timer) { timer.stop(); timer = null; } }
+
+    function update(s) {
+      var dur = CH.reduced ? 0 : 520;
+      if (s.play && !CH.reduced) {
+        stop();
+        idx = 0; paint(0, 260);
+        var last = 0;
+        timer = d3.interval(function () {
+          idx += 1;
+          if (idx >= grids.length) { stop(); return; }
+          paint(idx, dur);
+        }, 900);
+      } else {
+        stop();
+        idx = s.at === undefined ? grids.length - 1 : s.at;
+        paint(idx, dur);
+      }
+    }
+
+    return { update: update };
+  }
+
   /* ====================================================================== */
   function showViz(root, which) {
     d3.select(root).selectAll('[data-viz]').each(function () {
@@ -374,20 +489,25 @@
     { viz: 'trace', state: { set: true }, cap: 'The commanded profile: a staircase through the usable range.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true }, cap: 'Two channels: the cooking surface and the controller probe.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true, zoom: [40, 66], annot: { t: 44, series: 'grill', dx: 46, dy: -40, label: 'Overshoot', sub: 'then settle — the auger cycling' } }, cap: 'One step, up close.' },
-    { viz: 'trace', state: { set: true, grate: true, grill: true, grades: true }, cap: 'A grade per set point, from accuracy and stability.' }
+    { viz: 'trace', state: { set: true, grate: true, grill: true, grades: true }, cap: 'A grade per set point, from accuracy and stability.' },
+    { viz: 'heat', state: { play: true }, cap: 'The third output: the whole grate, stepped through the profile.' },
+    { viz: 'heat', state: { at: 5 }, cap: 'At the top of the range the two ends of the grate are 40°F apart.' }
   ];
 
   function boot() {
     CH.loadJSON([
       B + 'data/scorecard/trace.json',
       B + 'data/scorecard/grades.json',
-      B + 'data/scorecard/timing.json'
+      B + 'data/scorecard/timing.json',
+      B + 'data/scorecard/heatmap.json'
     ]).then(function (res) {
       D.trace = res[0];
       D.grades = res[1].rows;
       D.timing = res[2];
+      D.heat = res[3];
 
       var VIZ = {
+        heat: makeHeatmap(document.querySelector('[data-viz="heat"] .graphic-body')),
         timing: makeTiming(document.querySelector('[data-viz="timing"] .graphic-body')),
         arch: makeArch(document.querySelector('[data-viz="arch"] .graphic-body')),
         trace: makeTrace(document.querySelector('[data-viz="trace"] .graphic-body'))

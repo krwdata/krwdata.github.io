@@ -219,6 +219,63 @@ def timing_model():
     }
 
 
+
+# --- grate heat map ---------------------------------------------------------
+# The third output the API returns: a 3 x 5 grid of thermocouples laid across
+# the cooking surface, one grid per set point in the profile. Five columns run
+# left to right; three rows run back (0) to front (2), which is why the real
+# plot is captioned "Front of Grill" along the bottom edge.
+#
+# Shape preserved from the real test, values invented:
+#   * a LEFT-TO-RIGHT gradient — the right-hand side of the grate runs cooler,
+#     and the gap widens with temperature;
+#   * a mild back-to-front gradient on top of it;
+#   * SPREAD GROWS WITH SET POINT. This is the finding the plot exists for: a
+#     few degrees of variation at smoke settings, tens of degrees at max. It is
+#     also why the scorecard grades stability separately from accuracy;
+#   * the mean tracks the SAME BIAS the trace and the grades already show —
+#     a shade over at smoke settings, progressively under as the set point
+#     climbs. It has to: the grades table on the same page is computed from
+#     the trace, and a heat map that drifted the other way would have two
+#     charts contradicting each other about the same grill.
+ROWS, COLS = 3, 5
+
+
+def heatmap():
+    grids = []
+    for sp, _dwell in PROFILE:
+        f = (sp - 180) / (500.0 - 180.0)          # 0 at the bottom of the range
+        bias = 2.0 - 17.0 * f                     # +2F at 180 -> -15F at 500,
+                                                  # matching grade_segments()
+        spread = 6.0 + 26.0 * f                   # total left-to-right fall
+        cells = []
+        for r in range(ROWS):
+            for c in range(COLS):
+                lr = (c / (COLS - 1.0)) * spread          # cooler to the right
+                bf = (r / (ROWS - 1.0)) * spread * 0.22   # cooler to the front
+                jitter = RNG.uniform(-1.0, 1.0) * (1.0 + 2.2 * f)
+                cells.append({
+                    "r": r, "c": c,
+                    "t": round(sp + bias + spread * 0.45 - lr - bf + jitter),
+                })
+        temps = [x["t"] for x in cells]
+        grids.append({
+            "set": sp,
+            "cells": cells,
+            "avg": round(sum(temps) / float(len(temps))),
+            "delta": max(temps) - min(temps),
+        })
+    return {
+        "meta": {
+            "synthetic": True, "seed": SEED, "rows": ROWS, "cols": COLS,
+            "note": ("Thermocouple grid across the cooking surface. Row 0 is the "
+                     "back of the grill, row 2 the front. Spread grows with set "
+                     "point; that is the point of the plot."),
+        },
+        "grids": grids,
+    }
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     rows, segments = build_trace()
@@ -240,6 +297,7 @@ def main():
         "rows": grades,
     })
     write(os.path.join(OUT, "timing.json"), timing_model())
+    write(os.path.join(OUT, "heatmap.json"), heatmap())
 
     print("scorecard: %d samples, %d graded set points"
           % (len(rows), len(grades)))

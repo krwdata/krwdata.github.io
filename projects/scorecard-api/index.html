@@ -28,7 +28,7 @@
     <div class="wrap">
       <p class="eyebrow"><span>Case study</span><span class="ash">·</span><span>Past → Present → Future</span><span class="badge badge-production">Production</span></p>
       <h1>The test rig already knew when the test finished. So I let it ask for the analysis itself.</h1>
-      <p class="cs-dek">Thermal testing in the lab was automated end to end — except for the part where a person carried the data to the analysis. That handoff cost about <strong>30 minutes of human attention per test session</strong>. Replacing it with an API took the session down to five, and removed manual data entry entirely.</p>
+      <p class="cs-dek">Thermal testing in the lab was automated end to end — except for the part where a person carried the data to the analysis. That handoff cost about <strong>30 minutes of human attention per test session</strong>. Replacing it with an API took the session down to five, and removed duplicated, error-prone manual data entry.</p>
 
       <dl class="cs-facts">
         <div class="cs-fact"><dt>Built with</dt><dd>R + Plumber, Docker, systemd</dd></div>
@@ -57,7 +57,7 @@
       </div>
 
       <div class="prose">
-        <p>The analysis existed and it was good — a Shiny application that scored a test and produced the plots the team used. It just needed a person: transfer the files off the acquisition laptop, open the interface, type in the model, the firmware version, the trial number, the test number, wait for the result, screenshot it, attach it to the ticket, write the summary.</p>
+        <p>I had already built the analysis and it was good — a Shiny application that scored a test and produced the plots the team used. It just needed a person: transfer the files off the acquisition laptop, open the interface, type in the model, the firmware version, the trial number, the test number, wait for the result, screenshot it, attach it to the ticket, write the summary.</p>
         <p>Three minutes, give or take. Which sounds like nothing until you notice that standard practice is three grills running three tests each, and every one of those needs the same three minutes of somebody's attention — including the waiting.</p>
       </div>
     </section>
@@ -89,6 +89,14 @@
               <div class="graphic-body"></div>
               <div class="graphic-foot"></div>
             </figure>
+            <figure data-viz="heat">
+              <div class="graphic-head">
+                <span class="chart-title">Grate heat map, stepped through the profile</span>
+                <span class="graphic-tag">Synthetic</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
             <figure data-viz="trace">
               <div class="graphic-head">
                 <span class="chart-title">Scorecard output: a standard thermal test</span>
@@ -104,7 +112,7 @@
             <div class="step"><div class="step-card" data-icon="stopwatch">
               <span class="step-n">01</span>
               <h3>Where the three minutes went</h3>
-              <p>None of these steps is hard. Every one of them is a person doing something a machine already knows. The typing is the worst of it — model, firmware, trial number, test number, four chances to introduce a typo into a file name that someone will search for later.</p>
+              <p>None of these steps is hard. Every one of them is a person doing something a machine already knows. The typing is the worst of it — model, firmware, trial number, test number, four chances to introduce a typo into a file name that someone will search for later and gets tedious with a large fleet of test units.</p>
             </div></div>
 
             <div class="step"><div class="step-card" data-icon="fleet">
@@ -154,6 +162,20 @@
               <h3>A grade per set point</h3>
               <p>Two numbers per step: how far the settled grate temperature sits from target, and how tightly it holds. The tolerance scales with the set point, because holding ±10°F at 500 is a much harder ask than at 225. On this unit the grades fall off at the top of the range — which is the finding, and exactly the kind of thing that used to depend on whoever was reading the plot that afternoon.</p>
             </div></div>
+
+            <div class="step"><div class="step-card" data-icon="fleet">
+              <span class="step-n">10</span>
+              <h3>And the whole cooking surface</h3>
+              <p>The third output is a heat map: fifteen thermocouples in a three-by-five grid across the grate, one reading per position per set point. The trace tells you what the middle of the grill did. This tells you whether the rest of it agreed.</p>
+              <p>Watch it climb the staircase. At smoke settings the grid is almost uniform — every position within a few degrees of the last.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="taper">
+              <span class="step-n">11</span>
+              <h3>The spread is the finding</h3>
+              <p>By the top of the range the two ends of the grate are roughly 40°F apart, and the right-hand side runs consistently cooler. That is not a defect — every grill of this type has a gradient — but it is the difference between "this unit holds 500°F" and "this unit holds 500°F <em>somewhere</em>".</p>
+              <p>It is also why the scorecard grades accuracy and stability separately. A grill can sit dead on its set point on average and still be uneven enough to cook one end of a brisket faster than the other.</p>
+            </div></div>
           </div>
         </div>
       </div>
@@ -169,7 +191,13 @@
 
       <div class="prose">
         <h3>The parts that fought back</h3>
-        <p>Development took a month, and most of it was not the analysis. A representative sample, because the polished version of this story is less useful than the real one:</p>
+        <p>Development took a month, and most of it was not the analysis. Two things are worth saying before the list.</p>
+
+        <p><strong>This was my first time using Docker for anything.</strong> I had not written a Dockerfile, did not know what a bind mount was, and learned both on this project because the alternative was asking someone to keep an R session open forever. That is most of where the month went, and it is the reason the failure list below is so heavily weighted toward the container rather than the statistics.</p>
+
+        <p><strong>It was also built before I had any AI assistance.</strong> Early 2025, no Claude, no Copilot — every one of these dead ends was found the slow way, in documentation and forum threads and a lot of rebuilding the image to see whether the last guess worked. I mention it because the same build today would take a fraction of the time, and because the debugging in that list is the part of the work I actually learned from.</p>
+
+        <p>A representative sample, because the polished version of this story is less useful than the real one:</p>
         <ul>
           <li><strong>Docker could not write to the host disk.</strong> Days of bind-mount and <span class="mono">--mount</span> syntax, no errors, no file. I stopped fighting it and changed the design instead: return the results in the HTTP response rather than saving them somewhere and telling the user where to look. That turned out to be the better architecture — the endpoint became stateless, which is why it has needed no maintenance since.</li>
           <li><strong>PhantomJS.</strong> Rendering a styled table to an image needs a headless browser, and the standard R package wants PhantomJS, which will not install cleanly in the container. Two days lost before switching to <span class="mono">webshot2</span>, which uses headless Chrome instead. Immediate fix.</li>
