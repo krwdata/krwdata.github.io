@@ -20,7 +20,7 @@
 .cs-hero--media .cs-facts { grid-column: 1 / -1; }
 .cs-hero-photo { border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; position: relative; }
 .cs-hero-photo img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: filter var(--t-slow); }
-.cs-hero-photo::after { content: ''; position: absolute; inset: 0; background: var(--crimson); mix-blend-mode: color; opacity: .55; transition: opacity var(--t-slow); }
+.cs-hero-photo::after { content: ''; position: absolute; inset: 0; background: var(--duotone); mix-blend-mode: color; opacity: .55; transition: opacity var(--t-slow); }
 .cs-hero--media:hover .cs-hero-photo img { filter: none; }
 .cs-hero--media:hover .cs-hero-photo::after { opacity: 0; }
 .cs-hero-photo-cap { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ash-dim); margin-top: 8px; }

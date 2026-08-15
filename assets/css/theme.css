@@ -20,20 +20,31 @@
   --paper:     #FCFAFB;   /* chart surface inside the light column    */
 
   /* --- accents ----------------------------------------------------------
-     The brand orange is brilliant on onyx and only 2.2:1 on paper, so it
-     does not do the same job on both surfaces. Four tokens, one rule:
-       --accent          chrome on dark  (buttons, badges, active states)
-       --accent-mark     marks on either surface (bars, rules, chart strokes)
-       --accent-ink      accent *text* on light — the crimson clears 10:1
-       --accent-mark-ink prose that has to name a mark by its colour —
-                         same hue as --accent-mark, darkened until it clears
-                         4.5:1 on --offwhite (it lands at 5.0:1; the mark
-                         itself is only 3.0:1 and fails as body text)      */
-  --accent:          #F88714;
-  --accent-hi:       #FFA13B;
-  --accent-mark:     #E0700A;
-  --accent-mark-ink: #A85207;
-  --accent-ink:      #720E3D;
+     Re-themed to pink 2026-08-15. One hue (OKLCH H 329°) at four lightnesses,
+     because no single value can do every job across a dark and a light
+     surface. Measured, not chosen:
+       --accent          chrome on dark   #F778F1  6.94:1 on panel
+       --accent-hi       hover, lighter   #FEA2F8  9.14:1 on panel
+       --accent-mark     marks, either    #EB2AE7  3.36:1 paper / 4.68:1 panel
+       --accent-mark-ink prose naming a mark  #BB2CB7  4.50:1 on offwhite
+       --accent-ink      accent text on light  #772275  8.24:1 on offwhite
+     Note the accent is LIGHT now, so anything sitting on it takes dark text:
+     white on #F778F1 is 2.36:1, onyx is 8.25:1.                          */
+  --accent:          #F778F1;
+  /* The accent as a bare RGB triple. rgba() cannot take a hex custom property,
+     so the pulse glow and the disclosure tint used to hardcode the orange and
+     silently stayed orange through a re-theme. Keep this in step with
+     --accent above; it is the one duplication the format forces. */
+  --accent-rgb:      247, 120, 241;
+  --accent-hi:       #FEA2F8;
+  --accent-mark:     #EB2AE7;
+  --accent-mark-ink: #BB2CB7;
+  --accent-ink:      #772275;
+
+  /* Photo duotone. Its own token rather than borrowing --crimson, because the
+     photo treatment and the brand accent now want to pull in opposite
+     directions: the accent is pink, so the portrait leans blue against it. */
+  --duotone:         #2A4BC9;
 
   /* --- text & lines ---------------------------------------------------- */
   --ash:       #ABA5AC;
@@ -140,7 +151,7 @@ p  { margin: 0 0 1em; }
 /* --- skip link ------------------------------------------------------------ */
 .skip {
   position: absolute; left: -9999px; top: 0; z-index: 999;
-  background: var(--accent); color: #fff; padding: 10px 16px; font: 600 14px var(--font-body);
+  background: var(--accent); color: var(--onyx); padding: 10px 16px; font: 600 14px var(--font-body);
 }
 .skip:focus { left: 8px; top: 8px; }
 
@@ -166,12 +177,12 @@ p  { margin: 0 0 1em; }
 }
 .status-dot {
   width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-  box-shadow: 0 0 0 0 rgba(248,135,20,.55); animation: pulse 2.4s ease-out infinite;
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), .55); animation: pulse 2.4s ease-out infinite;
 }
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(248,135,20,.5); }
-  70%  { box-shadow: 0 0 0 7px rgba(248,135,20,0); }
-  100% { box-shadow: 0 0 0 0 rgba(248,135,20,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), .5); }
+  70%  { box-shadow: 0 0 0 7px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
 }
 
 .head-links { display: flex; gap: 4px; flex-wrap: wrap; }

@@ -18,8 +18,11 @@
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
 .btn:hover, .btn:focus-visible { border-color: var(--accent); color: var(--accent); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover, .btn-primary:focus-visible { background: var(--accent-hi); border-color: var(--accent-hi); color: #fff; }
+/* Dark label, not white. The accent is a light pink now: white on it measures
+   2.36:1 and fails badly, onyx measures 8.25:1. The old orange was 2.4:1 with
+   white too — this was already wrong and the re-theme made it obvious. */
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--onyx); }
+.btn-primary:hover, .btn-primary:focus-visible { background: var(--accent-hi); border-color: var(--accent-hi); color: var(--onyx); }
 
 /* --- stat ticker ---------------------------------------------------------- */
 .ticker {
@@ -98,7 +101,7 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--accent); trans
 }
 .portrait:hover img { filter: grayscale(.15) contrast(1.02) brightness(1); }
 .portrait::after {
-  content: ''; position: absolute; inset: 0; background: var(--crimson);
+  content: ''; position: absolute; inset: 0; background: var(--duotone);
   mix-blend-mode: color; opacity: .55; pointer-events: none; transition: opacity var(--t-slow);
 }
 .portrait:hover::after { opacity: 0; }
@@ -128,7 +131,7 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--accent); trans
 /* Note strip explaining the synthetic data — credibility, not fine print. */
 .disclosure {
   border: 1px solid var(--rule); border-left: 2px solid var(--accent);
-  background: rgba(248,135,20,.05); padding: 16px 20px; margin-bottom: clamp(30px, 5vw, 54px);
+  background: rgba(var(--accent-rgb), .05); padding: 16px 20px; margin-bottom: clamp(30px, 5vw, 54px);
   font-size: 13.5px; color: var(--ash); line-height: 1.6;
 }
 .disclosure strong { color: var(--offwhite); }

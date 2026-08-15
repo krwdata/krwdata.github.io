@@ -16,13 +16,14 @@
      failures is the employer's information, not mine, and none of the method
      depends on which letter is which. A is the series the story is about. */
   var CATS = ['COMP_A', 'COMP_B', 'COMP_C', 'COMP_D', 'COMP_E'];
-  /* Slots 1,2,3,4,6 of the categorical palette. A keeps slot 1 because it is
-     the series the story is about; the others are still given real hues rather
+  /* Slots 1,2,3,4,6 of the shared palette, read from it rather than retyped so
+     a re-theme in theme.css reaches these lines too. A keeps slot 1 because it
+     is the series the story is about; the others still get real hues rather
      than five greys, because the legend maps colour to category and five greys
      cannot do that. Focus is expressed through opacity and stroke weight. */
   var COLOR = {
-    COMP_A: '#E0700A', COMP_B: '#4A93D6', COMP_C: '#D3468F',
-    COMP_D: '#B08E18', COMP_E: '#22A8AE'
+    COMP_A: CH.PALETTE[0], COMP_B: CH.PALETTE[1], COMP_C: CH.PALETTE[2],
+    COMP_D: CH.PALETTE[3], COMP_E: CH.PALETTE[5]
   };
   var LABEL = {
     COMP_A: 'Component A', COMP_B: 'Component B', COMP_C: 'Component C',

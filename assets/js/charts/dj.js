@@ -34,15 +34,15 @@
   /* The four compatible moves take categorical slots; "off the wheel" is the
      residual bucket, so it takes the neutral rather than a fifth identity. */
   var MOVE_COLOR = {
-    same: '#E0700A', adjacent: '#D3468F', relative: '#B03A70',
-    energy: '#B08E18', clash: '#6B7684'
+    same: CH.PALETTE[0], adjacent: CH.PALETTE[2], relative: CH.PALETTE[4],
+    energy: CH.PALETTE[3], clash: CH.NEUTRAL
   };
 
   /* One colour per arm of the test. Slots 1 and 2 of the categorical palette,
      already validated as an adjacent pair under both CVD simulations — and each
      arm is also labelled A / B in text, so the colour is a convenience rather
      than the thing carrying the identity. */
-  var ARM_COLOR = ['#E0700A', '#4A93D6'];
+  var ARM_COLOR = [CH.PALETTE[0], CH.PALETTE[1]];
   var ARM_LETTER = ['A', 'B'];
 
   function camelotPos(c) {

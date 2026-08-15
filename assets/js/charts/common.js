@@ -113,10 +113,23 @@
      six series cannot clear that at any ordering — the segmentation cloud
      leans on its legend, its per-segment focus steps and the profile table
      underneath to carry identity, rather than on colour alone. */
-  var PALETTE = ['#E0700A', '#4A93D6', '#D3468F', '#B08E18', '#B03A70', '#22A8AE'];
+  /* READ FROM CSS, not duplicated here. `--series-1..6` in theme.css is the one
+     definition; this used to be a second hand-maintained copy of the same six
+     hexes with nothing keeping them in sync. Reading them at boot means a
+     re-theme touches one file, and the theme lab can drive the charts.
+     The literals below are only a fallback for a stylesheet that failed to
+     load — they are the values as of 2026-08-15. */
+  var FALLBACK = ['#E0700A', '#4A93D6', '#D3468F', '#B08E18', '#B03A70', '#22A8AE'];
+  function cssVar(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  }
+  var PALETTE = FALLBACK.map(function (hex, i) {
+    return cssVar('--series-' + (i + 1), hex);
+  });
 
   /* Not a slot: the fill for anything deliberately recessive. */
-  var NEUTRAL = '#6B7684';
+  var NEUTRAL = cssVar('--neutral', '#6B7684');
 
   /* --- the Camelot ring ---------------------------------------------------
      Twelve hues, one per Camelot number, because that is the convention every

@@ -44,3 +44,6 @@ venv/
 
 # content-audit.py writes these before rewriting a page
 *.bak
+
+# local-only palette bench, never ships
+theme-lab.html
