@@ -104,14 +104,32 @@
       apiBar.transition().duration(dur).delay(mode === 'both' ? 500 : 0)
         .attr('width', mode === 'both' ? Math.max(3, x(apiTotal)) : 0);
 
-      manualLab
-        .attr('x', mode === 'steps' ? x(perTest) + 10 : x(manualTotal) + 10)
-        .text(mode === 'steps'
-          ? '~3 min per test, per grill'
-          : '~30 min per session (3 grills × 3 tests)');
+      /* Put the label after the bar if it fits, inside the bar's end if it does
+         not. The manual bar reaches the full width on the comparison step, so
+         a fixed x(total) + 10 started 10px PAST the plot and ran 204px outside
+         the card — the text has nowhere to go in a 30px margin. Measuring is
+         the only way to know: the string changes per step and the box is
+         fluid. */
+      function place(sel, atValue, txt) {
+        sel.text(txt);
+        var w = 0;
+        try { w = sel.node().getComputedTextLength(); } catch (e) { w = txt.length * 7; }
+        var after = x(atValue) + 10;
+        if (after + w <= f.iw + f.m.right - 6) {
+          sel.attr('x', after).attr('text-anchor', 'start');
+        } else {
+          // Inside, right-aligned against the bar's end.
+          sel.attr('x', x(atValue) - 10).attr('text-anchor', 'end');
+        }
+      }
+
+      place(manualLab,
+        mode === 'steps' ? perTest : manualTotal,
+        mode === 'steps' ? '~3 min per test, per grill'
+                         : '~30 min per session (3 grills × 3 tests)');
       CH.show(manualLab, mode !== 'none', dur);
 
-      apiLab.attr('x', x(apiTotal) + 10).text('~5 min — and no waiting between grills');
+      place(apiLab, apiTotal, '~5 min — and no waiting between grills');
       CH.show(apiLab, mode === 'both', dur);
     }
 

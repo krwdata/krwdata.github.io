@@ -154,7 +154,16 @@
 .code {
   font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65;
   background: var(--onyx-deep); color: #D6D0CA; border-radius: var(--radius);
-  padding: 18px 20px; overflow-x: auto; margin: 24px auto; max-width: var(--readw);
+  /* Wider than the prose it sits among, and deliberately so. --readw is 62ch
+     measured in the BODY font; this block renders in mono, and its longest
+     line is 74 characters, so the reading measure guaranteed a horizontal
+     scrollbar on the one element where scrolling to read a line is worst.
+     82ch resolves against this element's own mono font and includes the
+     padding, so the longest line lands with a little room to spare. The
+     min() keeps it inside the column on narrow screens, where overflow-x
+     stays as the fallback. */
+  padding: 18px 20px; overflow-x: auto; margin: 24px auto;
+  max-width: min(100%, 82ch);
   border-left: 2px solid var(--accent-mark);
 }
 .code .c { color: #7C8B93; }        /* comment */
@@ -252,6 +261,14 @@
 .callout--scale .scale-fig p {
   margin: 8px 0 0; font-size: 13.5px; line-height: 1.45; color: #57525A;
 }
+/* Below ~620px the column is narrower than 74 mono characters at 12.5px, so
+   the block scrolls again. A step down in size buys back the tablet widths.
+   On a phone it still scrolls and that is the right answer — shrinking far
+   enough to fit would put the code under 9px. */
+@media (max-width: 620px) {
+  .code { font-size: 11px; }
+}
+
 @media (max-width: 520px) {
   .callout--scale .scale-figs { grid-template-columns: 1fr; gap: 18px; }
 }
