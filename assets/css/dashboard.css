@@ -18,9 +18,10 @@
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
 .btn:hover, .btn:focus-visible { border-color: var(--accent); color: var(--accent); }
-/* Dark label, not white. The accent is a light pink now: white on it measures
-   2.36:1 and fails badly, onyx measures 8.25:1. The old orange was 2.4:1 with
-   white too — this was already wrong and the re-theme made it obvious. */
+/* Dark label, not white. Kept from the pink experiment because it was never a
+   pink problem: white on the orange accent measures 2.48:1 and on the hover
+   2.02:1, both well under 4.5:1. Onyx is 7.37:1 and 9.07:1. The button looked
+   like this for a while with white text; it was wrong then too. */
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--onyx); }
 .btn-primary:hover, .btn-primary:focus-visible { background: var(--accent-hi); border-color: var(--accent-hi); color: var(--onyx); }
 

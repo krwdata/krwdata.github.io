@@ -20,31 +20,33 @@
   --paper:     #FCFAFB;   /* chart surface inside the light column    */
 
   /* --- accents ----------------------------------------------------------
-     Re-themed to pink 2026-08-15. One hue (OKLCH H 329°) at four lightnesses,
-     because no single value can do every job across a dark and a light
-     surface. Measured, not chosen:
-       --accent          chrome on dark   #F778F1  6.94:1 on panel
-       --accent-hi       hover, lighter   #FEA2F8  9.14:1 on panel
-       --accent-mark     marks, either    #EB2AE7  3.36:1 paper / 4.68:1 panel
-       --accent-mark-ink prose naming a mark  #BB2CB7  4.50:1 on offwhite
-       --accent-ink      accent text on light  #772275  8.24:1 on offwhite
-     Note the accent is LIGHT now, so anything sitting on it takes dark text:
-     white on #F778F1 is 2.36:1, onyx is 8.25:1.                          */
-  --accent:          #F778F1;
+     The brand orange is brilliant on onyx and only 2.2:1 on paper, so it
+     does not do the same job on both surfaces. Four tokens, one rule:
+       --accent          chrome on dark  (buttons, badges, active states)
+       --accent-mark     marks on either surface (bars, rules, chart strokes)
+       --accent-ink      accent *text* on light — the crimson clears 10:1
+       --accent-mark-ink prose that has to name a mark by its colour —
+                         same hue as --accent-mark, darkened until it clears
+                         4.5:1 on --offwhite (5.0:1; the mark itself is only
+                         3.0:1 and fails as body text)
+     A pink re-theme was tried and rolled back on 2026-08-15. The tokens are
+     wired so it is a values-only change — see content-audit/../theme-lab.html
+     for the bench, which still carries the pink preset.                   */
+  --accent:          #F88714;
   /* The accent as a bare RGB triple. rgba() cannot take a hex custom property,
-     so the pulse glow and the disclosure tint used to hardcode the orange and
-     silently stayed orange through a re-theme. Keep this in step with
-     --accent above; it is the one duplication the format forces. */
-  --accent-rgb:      247, 120, 241;
-  --accent-hi:       #FEA2F8;
-  --accent-mark:     #EB2AE7;
-  --accent-mark-ink: #BB2CB7;
-  --accent-ink:      #772275;
+     so the pulse glow and the disclosure tint used to hardcode these numbers
+     and stayed orange through a re-theme. Keep in step with --accent above;
+     it is the one duplication the format forces. */
+  --accent-rgb:      248, 135, 20;
+  --accent-hi:       #FFA13B;
+  --accent-mark:     #E0700A;
+  --accent-mark-ink: #A85207;
+  --accent-ink:      #720E3D;
 
-  /* Photo duotone. Its own token rather than borrowing --crimson, because the
-     photo treatment and the brand accent now want to pull in opposite
-     directions: the accent is pink, so the portrait leans blue against it. */
-  --duotone:         #2A4BC9;
+  /* Photo duotone. Its own token rather than reaching for --crimson directly,
+     so the photo treatment can be re-pointed without touching a brand colour.
+     Currently the crimson, which is where it started. */
+  --duotone:         #720E3D;
 
   /* --- text & lines ---------------------------------------------------- */
   --ash:       #ABA5AC;
