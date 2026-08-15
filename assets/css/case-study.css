@@ -52,7 +52,12 @@
 .light .eyebrow { color: #857F87; }
 .light a { color: var(--accent-ink); }
 
-.section-head { padding: clamp(52px, 7vw, 92px) 0 clamp(8px, 1.4vw, 18px); }
+/* Vertical only — never the `padding:` shorthand here. This element also
+   carries .wrap, whose `padding: 0 var(--pad)` is what holds the whole page off
+   the window edge. A shorthand with `0` for the horizontal slots silently reset
+   it, and every section head on every case study sat flush against the left
+   edge below 1360px, where the max-width centring stops covering for it. */
+.section-head { padding-top: clamp(52px, 7vw, 92px); padding-bottom: clamp(8px, 1.4vw, 18px); }
 .section-head h2 { max-width: 18ch; }
 .section-marker {
   display: inline-flex; align-items: center; gap: 9px;
@@ -97,12 +102,31 @@
   background: transparent; opacity: .32; transform: translateY(6px);
   transition: opacity var(--t-slow), transform var(--t-slow);
   border-left: 3px solid transparent; padding-left: 18px;
+  position: relative;                  /* the glyph is positioned against this */
 }
 .step.is-active .step-card { opacity: 1; transform: none; border-left-color: var(--accent-mark); }
 .step-n { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; color: #857F87; display: block; margin-bottom: 9px; }
 .step-card h3 { margin-bottom: 9px; font-size: clamp(18px, 1.8vw, 23px); }
 .step-card p { font-size: 16px; line-height: 1.66; margin-bottom: 0; color: #35363B; }
 .step-card p + p { margin-top: .85em; }
+
+/* --- step glyphs ----------------------------------------------------------
+   The wordless restatement of the step, injected by site.js from data-icon.
+   Deliberately quiet: it should register as texture on the way past and only
+   resolve into a shape if you stop and look. Two knobs, both here. */
+:root { --glyph-size: clamp(84px, 9vw, 132px); --glyph-opacity: .11; }
+.step-glyph {
+  position: absolute; z-index: 0; pointer-events: none;
+  bottom: -8px; right: 0; width: var(--glyph-size); height: var(--glyph-size);
+  color: var(--accent-mark); opacity: 0; transform: translateY(10px) scale(.94);
+  transition: opacity 520ms var(--t-slow), transform 620ms cubic-bezier(.2,.7,.2,1);
+}
+.step.is-active .step-glyph { opacity: var(--glyph-opacity); transform: none; }
+/* Prose has to sit over it. Excluding the glyph keeps it from being lifted too. */
+.step-card > :not(.step-glyph) { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .step-glyph { transition: none; transform: none; }
+}
 
 /* --- prose blocks between scrollies --------------------------------------- */
 .prose { max-width: var(--readw); margin: 0 auto; padding: clamp(30px, 4vw, 56px) 0; }
@@ -154,16 +178,115 @@
 }
 .data-table td.grade.good { color: var(--good); }
 .data-table td.grade.warn { color: var(--bad); }
+/* --- A/B panel -------------------------------------------------------------
+   Two arms, side by side, each on its own card. Overlaying both nights in one
+   box was the first attempt: four series in 460px, and the reader had to do the
+   separating the chart should have done. Two cards on a SHARED pair of scales
+   (see DOMAIN in dj.js) says the same thing and asks nothing. --ab carries the
+   arm's colour so the badge, the top rule and the chart line agree. */
+.ab-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.8vw, 26px);
+  max-width: 1180px; margin: 0 auto clamp(26px, 3.2vw, 40px);
+}
+.ab-card {
+  background: var(--paper); border: 1px solid var(--rule-lite);
+  border-top: 3px solid var(--ab, var(--accent-mark)); border-radius: var(--radius);
+  padding: clamp(15px, 1.7vw, 22px); min-width: 0;
+}
+.ab-head { display: flex; align-items: flex-start; gap: 12px; }
+.ab-badge {
+  flex: 0 0 auto; font: 700 12px/1 var(--font-mono); letter-spacing: .1em;
+  color: var(--paper); background: var(--ab, var(--accent-mark));
+  padding: 7px 10px; border-radius: 2px;
+}
+.ab-card h3 { margin: 0; font-size: clamp(18px, 1.9vw, 24px); line-height: 1.1; }
+.ab-meta {
+  margin: 6px 0 0; font: 400 11.5px/1.5 var(--font-mono);
+  letter-spacing: .02em; color: #6A646D;
+}
+.ab-chart { position: relative; height: clamp(180px, 21vw, 250px); margin: 16px 0 0; }
+.ab-chart--tall { height: clamp(300px, 30vw, 380px); }
+.ab-chart svg { width: 100%; height: 100%; overflow: visible; }
+.ab-cap { margin: 10px 0 0; font-size: 12.5px; line-height: 1.45; color: #6A646D; }
+
+.ab-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(12px, 1.6vw, 24px);
+  margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--rule-lite);
+}
+.ab-stat {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 5px 0; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.ab-stat dt { color: #6A646D; }
+.ab-stat dd { margin: 0; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* The two rows the test is actually about. */
+.ab-stat--hi dd { color: var(--ab, var(--accent-mark)); }
+
+.ab-readout {
+  max-width: 1180px; margin: 0 auto clamp(26px, 3.2vw, 40px);
+  background: var(--paper); border: 1px solid var(--rule-lite); border-radius: var(--radius);
+  padding: clamp(15px, 1.8vw, 24px);
+}
+.ab-readout .graphic-head { margin-bottom: 6px; }
+.ab-readout .graphic-head .chart-title { color: var(--ink); }
+
+/* A callout that is a caveat rather than a note. */
+.callout--warn { border-left-color: var(--neutral); }
+.callout--warn h4 { color: #57525A; }
+
+@media (max-width: 780px) {
+  .ab-grid { grid-template-columns: 1fr; }
+  .ab-stats { grid-template-columns: 1fr; }
+}
+
+/* A callout that leads with two numbers rather than a sentence. */
+.callout--scale .scale-figs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 32px);
+  margin: 4px 0 16px; padding-bottom: 16px; border-bottom: 1px solid var(--rule-lite);
+}
+.callout--scale .scale-fig .stat-value {
+  display: block; font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1; letter-spacing: -0.02em; color: var(--accent-ink);
+}
+.callout--scale .scale-fig .stat-value .unit { font-size: .58em; margin-left: 1px; }
+.callout--scale .scale-fig p {
+  margin: 8px 0 0; font-size: 13.5px; line-height: 1.45; color: #57525A;
+}
+@media (max-width: 520px) {
+  .callout--scale .scale-figs { grid-template-columns: 1fr; gap: 18px; }
+}
+
 .table-wrap { max-width: var(--readw); margin: 0 auto clamp(24px, 3vw, 36px); }
 .table-wrap--wide { max-width: 880px; }
 
-/* Setlist: a long table that should stay scannable, so it scrolls in place. */
-.setlist-wrap { max-height: 460px; overflow-y: auto; border: 1px solid var(--rule-lite); background: var(--paper); }
+/* Setlist: a long table that should stay scannable, so it scrolls in place.
+   Two nights share the slot behind a year switch — 157 rows stacked would bury
+   everything under it. */
+.setlist-wrap { border: 1px solid var(--rule-lite); background: var(--paper); }
+.setlist-panel { max-height: 460px; overflow-y: auto; }
 .data-table.setlist { font-size: 13.5px; }
 .data-table.setlist th { position: sticky; top: 0; background: var(--paper); padding-top: 12px; z-index: 1; }
 .data-table.setlist td, .data-table.setlist th { padding-left: 14px; padding-right: 14px; }
 .data-table.setlist td.ttl { text-align: left; }
 .data-table.setlist td.ttl span { display: block; color: #857F87; font-size: 12.5px; }
+
+/* The year switch. --sw carries that night's series colour, so the active tab
+   is marked by the same hue as its line in the chart above. */
+.setlist-switch { display: flex; gap: 0; border-bottom: 1px solid var(--rule-lite); }
+.setlist-switch button {
+  flex: 1 1 auto; appearance: none; cursor: pointer;
+  background: transparent; border: 0; border-bottom: 2px solid transparent;
+  padding: 12px 16px; text-align: left;
+  font: 600 13px/1.3 var(--font-body); letter-spacing: .01em; color: #6A646D;
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+.setlist-switch button + button { border-left: 1px solid var(--rule-lite); }
+.setlist-switch button:hover { background: rgba(0,0,0,.02); color: var(--ink); }
+.setlist-switch button .ash { font-weight: 400; color: #918B93; }
+.setlist-switch button[aria-selected="true"] {
+  color: var(--ink); border-bottom-color: var(--sw); background: rgba(0,0,0,.015);
+}
+.setlist-switch button:focus-visible { outline: 2px solid var(--accent-mark); outline-offset: -2px; }
 
 /* Segment cards */
 .seg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--gap); max-width: 940px; margin: clamp(24px, 3vw, 36px) auto; }

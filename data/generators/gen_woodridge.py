@@ -16,10 +16,10 @@ reproduced is the shape:
      spectacular.
 
   2. SEASONALITY — grilling is seasonal. Cook volume peaks in summer, bottoms
-     in winter, and igniter errors rise in the cold (hard starts) while
+     in winter, and component B errors rise in the cold (hard starts) while
      high-temp events rise in the heat.
 
-  3. ONE CATEGORY WITH A REAL SIGNAL — the temperature-sensor (RTD) series runs
+  3. ONE CATEGORY WITH A REAL SIGNAL — component A's series runs
      elevated for the first half of the timeline, then tapers after a component
      revision enters production. The taper is slow, not a cliff: units built
      with the earlier component keep shipping and stay in the field for a long
@@ -32,8 +32,8 @@ reproduced is the shape:
      numbers fall out on their own.
 
   5. CHURN ATTRIBUTION — the ranking of components by error-attributed churn is
-     preserved (temperature sensor and igniter dominate; high-temp events are a
-     distant third; fan and auger are rare). Counts are invented.
+     preserved (components A and B dominate; C is a
+     distant third; D and E are rare). Counts are invented.
 
 Run:  python3 gen_woodridge.py
 Out:  ../woodridge/{trends,trends_broken,churn,week_anchor,fleet}.json
@@ -58,14 +58,18 @@ INTERVENTION_WEEK = 58    # component revision enters production
 # Categories tracked by the real model. Noise-only alert types (pellet level,
 # lid open, grease, probes, low temp) were excluded by design and are excluded
 # here too.
-CATEGORIES = ["RTD", "IGNITOR", "HIGH_TEMP", "FAN", "AUGER"]
+# Components are anonymised. The real analysis named five physical parts; which
+# letter is which is not publishable, and nothing in the method depends on it.
+# A is the one carrying the signal — top of the frequency ranking AND the churn
+# ranking, and the one a revision had already been issued for.
+CATEGORIES = ["COMP_A", "COMP_B", "COMP_C", "COMP_D", "COMP_E"]
 
 LABELS = {
-    "RTD": "Temp sensor (RTD)",
-    "IGNITOR": "Igniter",
-    "HIGH_TEMP": "High temp",
-    "FAN": "Fan",
-    "AUGER": "Auger",
+    "COMP_A": "Component A",
+    "COMP_B": "Component B",
+    "COMP_C": "Component C",
+    "COMP_D": "Component D",
+    "COMP_E": "Component E",
 }
 
 # A persistent population of engineering and test units that emit alerts but
@@ -89,7 +93,7 @@ def season(week, phase=0.0):
 
 def base_rate(cat, week):
     """True percent of cooks affected, before noise. This is the signal."""
-    if cat == "RTD":
+    if cat == "COMP_A":
         # Elevated and slowly worsening as early-build units accumulate hours,
         # then a long taper once the revised component reaches the field.
         if week < INTERVENTION_WEEK:
@@ -97,15 +101,15 @@ def base_rate(cat, week):
         decay = math.exp(-(week - INTERVENTION_WEEK) / 21.0)
         floor = 0.95
         return floor + (5.2 - floor) * decay
-    if cat == "IGNITOR":
+    if cat == "COMP_B":
         # Cold weather makes hard starts more likely.
         return 2.05 - 0.42 * season(week)
-    if cat == "HIGH_TEMP":
+    if cat == "COMP_C":
         # Hot ambient + long summer cooks.
         return 1.25 + 0.30 * season(week)
-    if cat == "FAN":
+    if cat == "COMP_D":
         return 0.34 + 0.0008 * week
-    if cat == "AUGER":
+    if cat == "COMP_E":
         return 0.29
     raise ValueError(cat)
 
@@ -221,16 +225,16 @@ def week_anchor_examples():
     specs = [
         # (hours before/after boundary that the cook starts, cook length hrs,
         #  hours after cook start that the alert fires, category)
-        (-7.5, 9.0, 8.2, "RTD"),        # straddles: starts Sat, errors Sun
-        (-3.2, 5.5, 4.1, "IGNITOR"),    # straddles
-        (-22.0, 3.0, 1.4, "FAN"),       # clean, both sides in week N
-        (-46.0, 4.5, 2.2, "RTD"),       # clean
-        (-1.1, 7.0, 3.6, "HIGH_TEMP"),  # straddles
-        (2.5, 6.0, 5.1, "RTD"),         # clean, both in week N+1
-        (14.0, 2.5, 0.8, "AUGER"),      # clean
-        (-9.0, 11.0, 10.4, "IGNITOR"),  # straddles — an overnight brisket
-        (30.0, 3.5, 2.9, "RTD"),        # clean
-        (-0.4, 4.0, 1.9, "FAN"),        # straddles by minutes
+        (-7.5, 9.0, 8.2, "COMP_A"),        # straddles: starts Sat, errors Sun
+        (-3.2, 5.5, 4.1, "COMP_B"),    # straddles
+        (-22.0, 3.0, 1.4, "COMP_D"),       # clean, both sides in week N
+        (-46.0, 4.5, 2.2, "COMP_A"),       # clean
+        (-1.1, 7.0, 3.6, "COMP_C"),  # straddles
+        (2.5, 6.0, 5.1, "COMP_A"),         # clean, both in week N+1
+        (14.0, 2.5, 0.8, "COMP_E"),      # clean
+        (-9.0, 11.0, 10.4, "COMP_B"),  # straddles — an overnight brisket
+        (30.0, 3.5, 2.9, "COMP_A"),        # clean
+        (-0.4, 4.0, 1.9, "COMP_D"),        # straddles by minutes
     ]
     for i, (offset_h, length_h, alert_h, cat) in enumerate(specs):
         start = boundary + dt.timedelta(hours=offset_h)
@@ -260,7 +264,7 @@ def churn():
       active   = 5+ lifetime cooks
       churned  = active and silent for 8+ weeks
       attributed = a qualifying hardware error inside the last 5 cooks before
-                   going silent, with igniter errors excused when a pellet-level
+                   going silent, with component B errors excused when a pellet-level
                    warning fired on the same cook
     """
     fleet = FLEET_MAX
@@ -268,20 +272,20 @@ def churn():
     # Hazard of each category showing up in a churned device's final five
     # cooks. Ordering is the finding; the values are invented.
     hazard = {
-        "RTD":       0.0245,
-        "IGNITOR":   0.0185,
-        "HIGH_TEMP": 0.0110,
-        "FAN":       0.0041,
-        "AUGER":     0.0027,
+        "COMP_A":       0.0245,
+        "COMP_B":   0.0185,
+        "COMP_C": 0.0110,
+        "COMP_D":       0.0041,
+        "COMP_E":     0.0027,
     }
 
     active = 0
     churned = 0
     attributed = {c: 0 for c in CATEGORIES}
-    # Devices that hit an igniter error on the same cook as a pellet-level
+    # Devices that hit a component B error on the same cook as a pellet-level
     # warning. The real model excludes these: the grill did not fail, it ran
     # out of fuel. Tracking the count makes the exclusion visible.
-    excused_igniter = 0
+    excused_fuel_out = 0
     silent_weeks_hist = [0] * 27
 
     for _ in range(fleet):
@@ -316,8 +320,8 @@ def churn():
         # happens to come first in the list — otherwise the ranking would be an
         # artefact of iteration order.
         hit = RNG.choice(hits)
-        if hit == "IGNITOR" and RNG.random() < 0.34:
-            excused_igniter += 1      # out of pellets, not a failed igniter
+        if hit == "COMP_B" and RNG.random() < 0.34:
+            excused_fuel_out += 1     # out of pellets, not a failed part
             continue
         attributed[hit] += 1
 
@@ -343,7 +347,7 @@ def churn():
              "share": round(100.0 * attributed[c] / total_attributed, 1)}
             for c in sorted(CATEGORIES, key=lambda c: -attributed[c])
         ],
-        "excused_igniter": excused_igniter,
+        "excused_fuel_out": excused_fuel_out,
         "rates": {
             "active_of_fleet": round(100.0 * active / fleet, 1),
             "churn_of_active": round(100.0 * churned / active, 1),

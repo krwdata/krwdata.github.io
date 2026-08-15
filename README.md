@@ -58,7 +58,7 @@ projects/
   scorecard-api/                    Past → Present → Future
   woodridge-churn/                  Problem → Root cause → Fix
   consumer-segmentation/            Past → Present → Future
-  anatomy-of-a-dj-set/              the personal one, real data
+  NYE23-B2B-NYE24/              the personal one, real data
 assets/
   css/theme.css                     design tokens + shared components
   css/dashboard.css                 landing page

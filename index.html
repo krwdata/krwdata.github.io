@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kyle Woods — Data Analyst & Analytics Engineer</title>
-<meta name="description" content="Data analyst and analytics engineer in Salt Lake City. Fleet telemetry at 100K+ device scale, dbt pipelines, R APIs in production, and hand-built D3 data journalism.">
+<meta name="description" content="Data analyst and analytics engineer in Salt Lake City. Fleet telemetry at 1.4M device scale, dbt pipelines, R APIs in production, and hand-built D3 data journalism.">
 <meta property="og:title" content="Kyle Woods — Data Analyst & Analytics Engineer">
 <meta property="og:description" content="Nine years turning instrumented hardware into decisions. dbt, SQL, R, Python, D3.">
 <meta property="og:type" content="website">
@@ -27,8 +27,8 @@
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow">Salt Lake City, UT · Data Analyst &amp; Analytics Engineer</p>
-        <h1>I take instrumented things and make them <span class="ember">answer questions</span>.</h1>
-        <p class="hero-lede">Nine years in test engineering taught me that the hard part is never the measurement — it's turning a hundred thousand devices' worth of noise into something a team can act on. I build the pipelines, the models and the charts that close that gap. <strong>Currently doing that for connected grills; looking to do it somewhere new.</strong></p>
+        <h1>I test hardware. Then I make the data <span class="ember">worth looking at</span>.</h1>
+        <p class="hero-lede">Nine years in Test Engineering taught me the work only starts with measurement. The value is in turning a hundred thousand devices' worth of telemetry into something a team can act on. I build the pipelines, the models, and the charts, then I automate them so the answer arrives before the question goes stale. <strong>Currently doing that for connected grills; looking to do it somewhere new.</strong></p>
         <div class="hero-meta">
           <a class="btn btn-primary" href="#work">See the work</a>
           <a class="btn" href="resume/KW_Analytics_Engineer.pdf">Resume (PDF)</a>
@@ -36,7 +36,7 @@
       </div>
       <div>
         <p class="eyebrow">Currently</p>
-        <p class="hero-lede" style="font-size:15px">Senior Test Engineer &amp; Data Analyst at Traeger Grills, where I model IoT telemetry into the dashboards and reports that drive product and marketing decisions.</p>
+        <p class="hero-lede" style="font-size:15px">Senior Test Engineer and Data Analyst at Traeger Grills, where I own both halves of the evidence: instrumented test fleets under controlled protocols, and telemetry from nearly 50 million real cooks.</p>
         <p class="eyebrow" style="margin-top:22px">Working in</p>
         <ul class="chips">
           <li class="chip">SQL</li>
@@ -46,6 +46,7 @@
           <li class="chip">D3</li>
           <li class="chip">Docker</li>
           <li class="chip">Grafana</li>
+          <li class="chip">AWS</li>
         </ul>
       </div>
     </div>
@@ -59,8 +60,8 @@
         <span class="stat-label">Rows modelled in a<br>consumer segmentation</span>
       </div>
       <div class="ticker-cell" data-kind="scope">
-        <span class="stat-value num" data-count="100" data-unit="K+">0</span>
-        <span class="stat-label">Connected devices in<br>the fleet I analyse</span>
+        <span class="stat-value num" data-count="1.4" data-dp="1" data-unit="M">0</span>
+        <span class="stat-label">Connected grills in<br>the fleet I analyse</span>
       </div>
       <div class="ticker-cell" data-kind="outcome">
         <span class="stat-value num" data-count="83" data-unit="%">0</span>
@@ -102,7 +103,7 @@
         <h3>Error trends &amp; churn attribution</h3>
         <p class="panel-mission">Which component failures actually make someone stop using their grill? A dbt pipeline over 100K+ connected devices, a data-quality bug that reported 1,200% error rates, and the churn model that found the signal underneath.</p>
         <div class="panel-viz" data-mini="woodridge"></div>
-        <p class="panel-outcome">→ Two components identified as the drivers of hardware-caused churn, feeding refresh planning</p>
+        <p class="panel-outcome">→ Confirmed the component revision already in flight, and cleared the refresh to keep its current bill of materials</p>
         <ul class="chips">
           <li class="chip">dbt</li>
           <li class="chip">100K+ devices</li>
@@ -120,7 +121,7 @@
         <h3>Scorecard API</h3>
         <p class="panel-mission">The test rig already knew when the test finished, so I let it request its own analysis. An R Plumber API in Docker that turns two CSVs and a curl request into a scored plot, a graded table and an interactive report.</p>
         <div class="panel-viz" data-mini="scorecard"></div>
-        <p class="panel-outcome">→ 83% faster analysis (30 min → 5 min), zero manual data entry</p>
+        <p class="panel-outcome">→ 83% faster analysis (30 min → 5 min), zero manual data transfer</p>
         <ul class="chips">
           <li class="chip">R / Plumber</li>
           <li class="chip">Docker</li>
@@ -147,13 +148,13 @@
       </a>
 
       <!-- DJ -->
-      <a class="panel" href="projects/anatomy-of-a-dj-set/index.html">
+      <a class="panel" href="projects/NYE23-B2B-NYE24/index.html">
         <div class="panel-top">
           <span class="panel-idx">04 / Personal</span>
           <span class="badge badge-production">Live</span>
         </div>
-        <h3>Anatomy of a DJ set</h3>
-        <p class="panel-mission">Three years of my own Serato history, parsed out of an undocumented binary format and analysed with the same suspicion I'd apply to anyone else's data. Real data, no sanitising.</p>
+        <h3>DJ Analysis: NYE '23 B2B NYE '24</h3>
+        <p class="panel-mission">A/B analysis of my own DJ Sets. New Year's 2023 Back 2 Back with New Year's 2024.  What changes happen in a year of practice? Real data, no sanitising.</p>
         <div class="panel-viz" data-mini="dj"></div>
         <p class="panel-outcome">→ My mixing style, quantified — and it isn't what I would have told you</p>
         <ul class="chips">
@@ -181,7 +182,7 @@
       </div>
 
       <!-- About -->
-      <section class="panel panel--four" id="about">
+      <section class="panel panel--full" id="about">
         <div class="panel-top">
           <span class="panel-idx">06 / About</span>
           <span class="badge badge-production">Open to work</span>

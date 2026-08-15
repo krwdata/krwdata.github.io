@@ -21,14 +21,19 @@
 
   /* --- accents ----------------------------------------------------------
      The brand orange is brilliant on onyx and only 2.2:1 on paper, so it
-     does not do the same job on both surfaces. Three tokens, one rule:
-       --accent      chrome on dark  (buttons, badges, active states)
-       --accent-mark marks on either surface (bars, rules, chart strokes)
-       --accent-ink  accent *text* on light — the crimson clears 10:1     */
-  --accent:      #F88714;
-  --accent-hi:   #FFA13B;
-  --accent-mark: #E0700A;
-  --accent-ink:  #720E3D;
+     does not do the same job on both surfaces. Four tokens, one rule:
+       --accent          chrome on dark  (buttons, badges, active states)
+       --accent-mark     marks on either surface (bars, rules, chart strokes)
+       --accent-ink      accent *text* on light — the crimson clears 10:1
+       --accent-mark-ink prose that has to name a mark by its colour —
+                         same hue as --accent-mark, darkened until it clears
+                         4.5:1 on --offwhite (it lands at 5.0:1; the mark
+                         itself is only 3.0:1 and fails as body text)      */
+  --accent:          #F88714;
+  --accent-hi:       #FFA13B;
+  --accent-mark:     #E0700A;
+  --accent-mark-ink: #A85207;
+  --accent-ink:      #720E3D;
 
   /* --- text & lines ---------------------------------------------------- */
   --ash:       #ABA5AC;
@@ -196,6 +201,13 @@ p  { margin: 0 0 1em; }
   border: 1px solid var(--rule); border-radius: 2px; padding: 4px 9px; white-space: nowrap;
 }
 .light .chip { color: #59535B; background: rgba(0,0,0,.03); border-color: var(--rule-lite); }
+
+/* --- naming a mark inside prose -------------------------------------------
+   When a sentence says "the orange dot", the word should be the thing. Both
+   are weighted as well as coloured, so the tie to the chart survives greyscale
+   printing and colour-vision deficiency — colour is never the only cue. */
+.ink-mark { color: var(--accent-mark-ink); font-weight: 600; }
+.ink-dot  { color: var(--ink);             font-weight: 700; }
 
 /* --- footer --------------------------------------------------------------- */
 .site-foot {

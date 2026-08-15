@@ -101,55 +101,55 @@
           </div>
 
           <div class="scrolly-steps">
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="stopwatch">
               <span class="step-n">01</span>
               <h3>Where the three minutes went</h3>
               <p>None of these steps is hard. Every one of them is a person doing something a machine already knows. The typing is the worst of it — model, firmware, trial number, test number, four chances to introduce a typo into a file name that someone will search for later.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="fleet">
               <span class="step-n">02</span>
               <h3>Three grills, three tests</h3>
               <p>Multiply it by the standard practice and the session costs about half an hour. The API path costs one upload at the end, because the analysis has already happened for every grill by the time anyone looks. That is the 83%.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="layers">
               <span class="step-n">03</span>
               <h3>What was already there</h3>
               <p>Thermocouples on the grate, the controller's own log, and a sequencer driving the whole profile. Two CSV files fall out at the end of every test. This half of the system was never the problem.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="api">
               <span class="step-n">04</span>
               <h3>One request at the end of the test</h3>
               <p>The sequencer runs a batch script when a test completes. That script sends both CSVs and the test metadata to an R Plumber API running in a Docker container on a Linux server. No interface, no typing, no transfer.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="docs">
               <span class="step-n">05</span>
               <h3>Three outputs, ready to attach</h3>
               <p>A scored plot as an image, the graded results table as an image, and an interactive plotly page for anyone who wants to zoom in on a specific event. The same analysis code the Shiny app used — that was a hard requirement, because two copies of an analysis is two analyses.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="stairs">
               <span class="step-n">06</span>
               <h3>What the scorecard scores</h3>
               <p>The test walks the controller up a staircase of set points and holds at each one long enough to reach steady state. That commanded profile is the dashed line — the thing every measurement is judged against.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="diverge">
               <span class="step-n">07</span>
               <h3>Two channels that disagree on purpose</h3>
               <p>The controller probe sits near the fire and reads hot. The grate thermocouple sits where the food is, and it is the one the controller is actually tuned against. The gap between them is not an error — it is the number a cook cares about versus the number the grill thinks it is holding.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="pulse">
               <span class="step-n">08</span>
               <h3>Every step has the same signature</h3>
               <p>Command a step up, and the controller overshoots, then settles into a slow sawtooth as the auger cycles pellets in. The scorecard ignores the ramp entirely and measures the second half of each dwell, where the behaviour is steady enough to mean something.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="gauge">
               <span class="step-n">09</span>
               <h3>A grade per set point</h3>
               <p>Two numbers per step: how far the settled grate temperature sits from target, and how tightly it holds. The tolerance scales with the set point, because holding ±10°F at 500 is a much harder ask than at 225. On this unit the grades fall off at the top of the range — which is the finding, and exactly the kind of thing that used to depend on whoever was reading the plot that afternoon.</p>
@@ -234,9 +234,9 @@
       </ul>
 
       <nav class="cs-nav" aria-label="Case studies">
-        <a href="../anatomy-of-a-dj-set/index.html">
+        <a href="../NYE23-B2B-NYE24/index.html">
           <span class="dir">Previous</span>
-          <span class="ttl">Anatomy of a DJ set</span>
+          <span class="ttl">DJ Analysis: NYE '23 B2B NYE '24</span>
         </a>
         <a class="next" href="../woodridge-churn/index.html">
           <span class="dir">Next</span>

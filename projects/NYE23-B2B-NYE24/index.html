@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-base="../../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJ Analysis: NYE '23 B2B NYE '24 — Kyle Woods</title>
+<meta name="description" content="Three years of Serato history parsed out of an undocumented binary format: 6,265 plays, 144 sets, and two New Year's Eve sets a year apart that show which of my skills actually improved.">
+<meta property="og:title" content="DJ Analysis: NYE '23 B2B NYE '24 — Kyle Woods">
+<meta property="og:description" content="Two New Year's Eve sets, twelve months apart, parsed out of Serato's binary session files: tempo discipline improved sharply, harmonic mixing did not move at all.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="../../assets/img/og-dj.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/theme.css">
+<link rel="stylesheet" href="../../assets/css/case-study.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header data-site-head></header>
+
+<main id="main">
+
+  <section class="cs-hero cs-hero--media">
+    <div class="wrap">
+      <div>
+      <p class="eyebrow"><span>Personal project</span><span class="ash">·</span><span>Real data, no sanitising</span><span class="badge badge-production">Live</span></p>
+      <h1>I pointed the churn model at myself</h1>
+      <p class="cs-dek">Every professional project on this site runs on synthetic data, because the real numbers belong to an employer. This one doesn't. It is <strong><span data-dj="plays">—</span> plays across <span data-dj="sets">—</span> sets and <span data-dj="hours">—</span> hours on the decks</strong>, parsed out of an undocumented binary format, analysed with the same suspicion I would apply to anyone else's data.</p>
+
+      </div>
+
+      <div>
+        <div class="cs-hero-photo">
+          <img src="../../assets/img/dj-square.jpg" alt="Kyle Woods holding a DJ controller" width="800" height="800">
+        </div>
+        <p class="cs-hero-photo-cap">The other dataset</p>
+      </div>
+
+      <dl class="cs-facts">
+        <div class="cs-fact"><dt>Source</dt><dd>Serato DJ Pro session files, <span data-dj="firstdate">—</span> to <span data-dj="lastdate">—</span></dd></div>
+        <div class="cs-fact"><dt>Parsed</dt><dd><span data-dj="tracks">—</span> unique tracks, <span data-dj="keycov">—</span> with a musical key</dd></div>
+        <div class="cs-fact"><dt>Analysed</dt><dd><span data-dj="transitions">—</span> transitions between tracks</dd></div>
+        <div class="cs-fact cs-fact--hi"><dt>Finding</dt><dd>A year of practice moved my tempo discipline and left my harmonic mixing exactly where it was</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <nav class="frame-rail" aria-label="Story sections">
+    <div class="frame-rail-in">
+      <a class="frame-step" href="#data"><span class="glyph" aria-hidden="true">⌘</span>The data</a>
+      <a class="frame-step" href="#night"><span class="glyph" aria-hidden="true">●</span>One night</a>
+      <a class="frame-step" href="#ab"><span class="glyph" aria-hidden="true">⇄</span>The A/B test</a>
+      <a class="frame-step" href="#pop"><span class="glyph" aria-hidden="true">▦</span>All of it</a>
+      <a class="frame-step" href="#style"><span class="glyph" aria-hidden="true">→</span>The verdict</a>
+    </div>
+  </nav>
+
+  <div class="light">
+
+    <section id="data">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">⌘</span> The data</p>
+        <h2>Three years of Serato history</h2>
+        <p class="section-lede">Every track I have played since <span data-dj="firstdate">—</span>, read out of Serato DJ Pro’s own session files — what it was, when it started, its tempo and its key. <span data-dj="keycov">—</span> carry a key and effectively all carry a BPM. Genre mostly does not survive the trip: <span data-dj="streamed">—</span> of what I play is streamed, and streamed tracks arrive untagged, so there is no genre analysis on this page.</p>
+      </div>
+    </section>
+
+    <section id="night">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">●</span> One night, in full</p>
+        <h2>New Year's Eve, <span data-dj="s1year">—</span></h2>
+        <p class="section-lede"><span data-dj="s1tracks">—</span> tracks, <span data-dj="s1start">—</span> to <span data-dj="s1end">—</span>, on a <span data-dj="s1dev">—</span>. Walk it once on its own, because the comparison below only means something if you know what one of these nights actually looks like. The clock is measured from midnight rather than from when I plugged in — that choice is doing work later.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="scrolly" id="scrolly-dj">
+          <div class="scrolly-graphic">
+            <figure data-viz="wheel">
+              <div class="graphic-head">
+                <span class="chart-title">The Camelot wheel</span>
+                <span class="graphic-tag">Real data</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+            <figure data-viz="arc">
+              <div class="graphic-head">
+                <span class="chart-title">Tempo against the clock</span>
+                <span class="graphic-tag">Real data</span>
+              </div>
+              <div class="graphic-body"></div>
+              <div class="graphic-foot"></div>
+            </figure>
+          </div>
+
+          <div class="scrolly-steps">
+            <div class="step"><div class="step-card" data-icon="wheel">
+              <span class="step-n">01</span>
+              <h3>Everything I've played, by key</h3>
+              <p>The Camelot wheel renumbers the circle of fifths so that keys which sound good together end up next to each other: same number is a relative major/minor pair, one step around is a fifth away. Outer ring is major, inner ring is minor, and each number keeps the hue a DJ already expects it to have.</p>
+              <p><strong>Every dot is one track.</strong> Each key gets the same faintly tinted slot and its tracks are scattered inside it, so the keys I live in read as dense clusters and the ones I have barely touched still read as something. Two encodings came before this. Tint failed because comparing twelve hues for darkness is a judgement people are bad at and colour blindness makes impossible. Bar length was honest but the library runs 310 tracks in one key against eight in another — the quiet keys drew a two-pixel stub and looked like zero, which is not what eight means.</p>
+              <p>My library leans minor and clusters hard in a few keys — which is less about taste than about what disco, funk and house are mostly written in.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="tempo">
+              <span class="step-n">02</span>
+              <h3>One night, by tempo</h3>
+              <p>Each dot is a track, placed by the time it started and the BPM Serato analysed it at. Four and a half hours, from a slow open to whatever was happening at two in the morning.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="pulse">
+              <span class="step-n">03</span>
+              <h3>The shape of the room</h3>
+              <p>Track-to-track BPM is noisy, so this is a rolling mean across nine tracks. It opens in the 80s, is up past 120 within half an hour, and then holds a band roughly between 115 and 126 for three hours straight.</p>
+              <p>The deep notches are real and they are not mistakes. Each is a slow record dropped deliberately into the middle of a fast stretch — the thing you do when a room needs a breath, or a singalong.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="midnight">
+              <span class="step-n">04</span>
+              <h3>Midnight, unlabelled</h3>
+              <p>I did not tag this. Nothing in the pipeline knows what New Year's Eve is. The Beach Boys' <em>Auld Lang Syne</em> starts at 23:57:41 and runs through the countdown; the first record of the new year lands at 00:00:01. That is not a coincidence the pipeline arranged — it is what happened in the room.</p>
+              <p>It is a small thing and it is also the whole argument for working with event-level data rather than summaries. The average BPM of this night tells you nothing. The timestamps tell you there was a countdown.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="chords">
+              <span class="step-n">05</span>
+              <h3>Now the harmonic version</h3>
+              <p>Same night, drawn on the wheel: one line per transition, from the key I was leaving to the key I was going to. Short lines are harmonically adjacent moves. Long ones across the middle are jumps.</p>
+              <p>There are a lot of long lines.</p>
+            </div></div>
+
+            <div class="step"><div class="step-card" data-icon="funnel">
+              <span class="step-n">06</span>
+              <h3>The moves that stayed inside the wheel</h3>
+              <p>Filtering to neighbour-on-the-wheel transitions leaves a much sparser picture, and a real one: my longest unbroken run of harmonically compatible mixes that night was <strong><span data-dj="s1run">—</span></strong>.</p>
+              <p>Hold onto that number. It is the one thing a year of practice left completely untouched.</p>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ A/B ============================ -->
+    <section id="ab">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">⇄</span> The A/B test</p>
+        <h2>Arm A: last year's me. Arm B: this year's.</h2>
+        <p class="section-lede">The history contains exactly two New Year's Eve parties, twelve months apart. Same night of the year, same job, same kind of room — and a year of practice as the only thing I deliberately changed. That is close enough to an A/B test to be worth borrowing the structure from one: two arms, a fixed set of measures, and a readout. It is also far enough from one that the very next thing on this page is a precise account of the difference — because if I am going to use the words, I should be the one to say where they stop applying.</p>
+      </div>
+
+      <div class="prose">
+        <div class="callout callout--warn">
+          <h4>This is not an A/B test — and that matters, so here is the difference</h4>
+          <p>I have borrowed the structure because it is the right way to <em>lay this out</em>: two arms, one fixed set of measures, read the same way on both. But an A/B test is a specific thing and this fails four of its requirements outright. <strong>Assignment was not random</strong> — it was the calendar. <strong>The arms are not concurrent</strong>, they are twelve months apart, which confounds the comparison with everything that happened in between. <strong>n = 1 per arm.</strong> And <strong>the treatment was never administered</strong>: "a year of practice" is a story I am telling about the gap, not an intervention I applied and measured. The metrics were also chosen after I had seen the data.</p>
+          <p>At least three things moved that I did not control — a different crowd, a different room, and a controller I had a year more practice on (<span data-dj="s1dev">—</span> in arm A, <span data-dj="s2dev">—</span> in arm B). Any single number below could be one of those instead of me.</p>
+          <p><strong>There is a tempting way to fake significance here and I want to name it.</strong> Arm A gives <span data-dj="s1transbpm">—</span> track-to-track tempo changes and arm B gives <span data-dj="s2transbpm">—</span>, so I could run a rank-sum test on those two distributions and print a p-value. That would be <em>pseudoreplication</em>: the thing that changed between the arms applies to the <strong>night</strong>, so the night is the unit of inference — but the test would be counting transitions as independent replicates. It would look like it had answered "did I change" when it had only answered "do these two specific nights differ", which is a measurement and needs no test at all. Transitions inside one night are autocorrelated on top of that, so the standard error would be fiction. No p-value appears on this page, deliberately.</p>
+          <p>So what is left? Two things, and they are worth more than a false test. The numbers below are <strong>measurements, not estimates</strong> — the median tempo jump really did go from <span data-dj="s1jump">—</span> to <span data-dj="s2jump">—</span>, and nothing about sampling changes that. And one comparative claim survives every confound above: <strong>these two skills are separable.</strong> Any explanation that accounts for the tempo change has to also account for why it left harmonic mixing exactly where it was, and "different crowd" does not do that. How <em>fast</em> either skill moves would need many more pairs — which is the argument for measuring next New Year's Eve too.</p>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <div class="ab-grid">
+          <div class="ab-card" style="--ab:#E0700A">
+            <div class="ab-head">
+              <span class="ab-badge">A</span>
+              <div>
+                <h3>NYE <span data-dj="s1year">—</span></h3>
+                <p class="ab-meta"><span data-dj="s1start">—</span>–<span data-dj="s1end">—</span> · <span data-dj="s1dev">—</span></p>
+              </div>
+            </div>
+            <div class="ab-chart" data-ab-chart="0"></div>
+            <p class="ab-cap">Tempo against the clock. Same axes as arm B.</p>
+            <dl class="ab-stats">
+              <div class="ab-stat"><dt>Tracks</dt><dd data-dj="s1tracks">—</dd></div>
+              <div class="ab-stat"><dt>Length</dt><dd><span data-dj="s1hours">—</span> h</dd></div>
+              <div class="ab-stat ab-stat--hi"><dt>Median jump</dt><dd><span data-dj="s1jump">—</span> BPM</dd></div>
+              <div class="ab-stat ab-stat--hi"><dt>Within ±2 BPM</dt><dd data-dj="s1w2">—</dd></div>
+              <div class="ab-stat"><dt>Off the wheel</dt><dd data-dj="s1clash">—</dd></div>
+              <div class="ab-stat"><dt>Longest run</dt><dd data-dj="s1run">—</dd></div>
+            </dl>
+          </div>
+
+          <div class="ab-card" style="--ab:#4A93D6">
+            <div class="ab-head">
+              <span class="ab-badge">B</span>
+              <div>
+                <h3>NYE <span data-dj="s2year">—</span></h3>
+                <p class="ab-meta"><span data-dj="s2start">—</span>–<span data-dj="s2end">—</span> · <span data-dj="s2dev">—</span></p>
+              </div>
+            </div>
+            <div class="ab-chart" data-ab-chart="1"></div>
+            <p class="ab-cap">Tempo against the clock. Same axes as arm A.</p>
+            <dl class="ab-stats">
+              <div class="ab-stat"><dt>Tracks</dt><dd data-dj="s2tracks">—</dd></div>
+              <div class="ab-stat"><dt>Length</dt><dd><span data-dj="s2hours">—</span> h</dd></div>
+              <div class="ab-stat ab-stat--hi"><dt>Median jump</dt><dd><span data-dj="s2jump">—</span> BPM</dd></div>
+              <div class="ab-stat ab-stat--hi"><dt>Within ±2 BPM</dt><dd data-dj="s2w2">—</dd></div>
+              <div class="ab-stat"><dt>Off the wheel</dt><dd data-dj="s2clash">—</dd></div>
+              <div class="ab-stat"><dt>Longest run</dt><dd data-dj="s2run">—</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Arm B's line climbs and then holds. Arm A's lurches — it swings through a wider band and crosses itself repeatedly. Both nights have a median tempo in the 120s, which is exactly why the summary table never showed this and the chart does.</p>
+        <p>Both countdowns land, too, and neither is tagged. Arm A: <span data-dj="s1last">—</span> at <span data-dj="s1lasttime">—</span> into <span data-dj="s1first">—</span> at <span data-dj="s1firsttime">—</span>. Arm B: <span data-dj="s2last">—</span> at <span data-dj="s2lasttime">—</span> into <span data-dj="s2first">—</span> at <span data-dj="s2firsttime">—</span>. Two independent nights hitting the transition inside a three-minute window, recovered from nothing but play timestamps.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="ab-readout" data-readout>
+          <div class="graphic-head">
+            <span class="chart-title">The readout — every measure, A → B</span>
+            <span class="graphic-tag">Real data</span>
+          </div>
+          <p class="ab-cap">Each row has its own scale: minutes, BPM and percentages do not belong on one ruler. The dot leaves A and travels to B, so what you watch is how far each measure moved. Only three measures here have a direction I would call better, and all three went that way — which is why nothing is red. The rest are grey deliberately: a shorter night is not a worse one, and leaving the wheel is a choice, not a mistake.</p>
+          <div class="ab-chart ab-chart--tall" data-ab-readout></div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h3>The result</h3>
+        <p><strong>Tempo discipline moved a long way. Harmonic mixing did not move at all.</strong> The median jump between consecutive tracks went from <span data-dj="s1jump">—</span> BPM to <span data-dj="s2jump">—</span>, and transitions landing inside two BPM went from <span data-dj="s1w2">—</span> to <span data-dj="s2w2">—</span>. Over the same twelve months, transitions leaving the Camelot wheel went from <span data-dj="s1clash">—</span> to <span data-dj="s2clash">—</span> — up, not down — and the longest unbroken harmonic run was <span data-dj="s1run">—</span> on both nights. Identical.</p>
+        <p>That row is grey in the readout rather than red, and the distinction matters: leaving the wheel is a choice, not a defect, so there is no direction it <em>ought</em> to move. What is damning is not the sign. It is that a year of deliberate practice moved the two tempo rows by 19 and 15 points and left this one sitting still.</p>
+        <p>I would not have predicted the split. If asked, I would have guessed both numbers drifted the same way, because "getting better at DJing" felt like one skill rather than several. It is at least two, and I was only practising one of them.</p>
+      </div>
+    </section>
+
+    <!-- ============================ POPULATION ============================ -->
+    <section id="pop">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">▦</span> All of it</p>
+        <h2>It isn't just those two nights</h2>
+        <p class="section-lede">Two sets can be a coincidence. <span data-dj="sets">—</span> sets and <span data-dj="transitions">—</span> transitions cannot.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="ab-readout">
+          <div class="graphic-head">
+            <span class="chart-title">Every transition, all <span data-dj="sets">—</span> sets, classified</span>
+            <span class="graphic-tag">Real data</span>
+          </div>
+          <div class="ab-chart ab-chart--tall" data-moves></div>
+          <p class="ab-cap">Each transition classified by its harmonic relationship. Hover any bar for the count.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>62% of my transitions go somewhere the Camelot wheel would not send me. The remaining 38% are the classic compatible moves: a neighbour on the wheel (16%), the same key again (14%), a two-step energy lift (6%), or the relative major or minor (2%).</p>
+        <p>If I had been asked before running any of this, I would have guessed the opposite ratio. That gap between what I believed and what I did is the only genuinely useful output of the whole project — and it is the reason the A/B test above is worth more than either night on its own.</p>
+      </div>
+    </section>
+
+    <section id="style">
+      <div class="wrap section-head">
+        <p class="section-marker"><span aria-hidden="true">→</span> The verdict</p>
+        <h2>What three years of my own data says</h2>
+      </div>
+
+      <div class="prose">
+        <ul>
+          <li><strong>Tempo is the constraint I actually respect, and it is the one that improved.</strong> Median tempo change between tracks across everything: 3 BPM. Between the two New Year's Eves it went <span data-dj="s1jump">—</span> → <span data-dj="s2jump">—</span>, and transitions inside two BPM went <span data-dj="s1w2">—</span> → <span data-dj="s2w2">—</span>.</li>
+          <li><strong>Key is not, and it did not.</strong> 62% of transitions leave the wheel entirely, consistently, across three years and <span data-dj="sets">—</span> sets. Between the two comparable nights it moved the wrong way, <span data-dj="s1clash">—</span> → <span data-dj="s2clash">—</span>. This is not drift or a bad night; it is how I play.</li>
+          <li><strong>Skill is not one number.</strong> That is the finding I did not have before drawing the two nights together. One thing got measurably better while the other sat still, and I had been carrying both around as a single sense of "getting better".</li>
+          <li><strong>The sets are long.</strong> <span data-dj="hours">—</span> hours over <span data-dj="sets">—</span> sets, averaging over an hour and a half each, with a marked preference for a slow open and a genuinely slow close.</li>
+          <li><strong>Nine tracks in ten are streamed.</strong> Which is a reasonable argument for tagging a core crate locally if I ever want one.</li>
+        </ul>
+
+        <p>The obvious next move is to stop describing and start predicting: given the track playing now, what did I reach for next? There is enough data here for a simple transition model, and the interesting question is not whether it can predict me — it is which of its mistakes are better than what I actually did.</p>
+
+        <p>The less obvious one is to fix the thing wrong with the test above: <strong>n = 1 per arm.</strong> I now have a baseline and a paired design that works, and New Year's Eve happens once a year whether I measure it or not. Reading the same six numbers off it every year costs nothing and turns one pair into a series — at which point "did I get better" stops being a story and starts being a trend line. That is the same argument I would make about any metric worth watching, which is why it belongs on this page and not just in my head.</p>
+      </div>
+
+      <blockquote class="pull">
+        I would have told you I mixed in key. Three years of timestamps disagree — and the year I spent getting better did not touch it.
+        <cite>The point of measuring anything</cite>
+      </blockquote>
+
+      <div class="prose">
+        <h3>Both arms, in full</h3>
+        <p>Every track from both nights, as parsed. Nothing is edited or reordered. Times are wall clock, so the two lists line up at midnight.</p>
+      </div>
+      <div class="table-wrap table-wrap--wide">
+        <div class="setlist-wrap" data-setlist></div>
+        <p class="cap">Parsed by <span class="mono">data/generators/parse_serato.py</span> from Serato session files. Times are wall clock; both nights run past midnight.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="impact">
+    <div class="wrap">
+      <h2>By the numbers</h2>
+      <div class="impact-grid">
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="6265">0</span>
+          <p>Plays parsed from an undocumented binary format, across 563 session files</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="3045">0</span>
+          <p>Track-to-track transitions classified by harmonic relationship and tempo change</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="62" data-unit="%">0</span>
+          <p>Of those transitions leave the Camelot wheel — the finding I did not expect</p>
+        </div>
+        <div class="impact-cell">
+          <span class="stat-value num" data-count="10" data-unit=" → 3">0</span>
+          <p>Median BPM jump between tracks, New Year's Eve 2023 vs 2024 — the one thing a year of practice moved</p>
+        </div>
+      </div>
+
+      <p class="stack-note">Built with</p>
+      <ul class="chips">
+        <li class="chip">Python (stdlib only)</li>
+        <li class="chip">Binary format reverse engineering</li>
+        <li class="chip">D3</li>
+        <li class="chip">Camelot / circle of fifths</li>
+        <li class="chip">Serato DJ Pro</li>
+      </ul>
+
+      <nav class="cs-nav" aria-label="Case studies">
+        <a href="../consumer-segmentation/index.html">
+          <span class="dir">Previous</span>
+          <span class="ttl">Six ways to cook: consumer segmentation</span>
+        </a>
+        <a class="next" href="../scorecard-api/index.html">
+          <span class="dir">Next</span>
+          <span class="ttl">Scorecard API: 30 minutes to 5</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer data-site-foot></footer>
+
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/lib/d3.v7.min.js"></script>
+<script src="../../assets/js/scrolly.js"></script>
+<script src="../../assets/js/charts/common.js"></script>
+<script src="../../assets/js/charts/dj.js"></script>
+</body>
+</html>

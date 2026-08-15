@@ -303,8 +303,10 @@ def build_sets(all_plays):
         bpms = [t["bpm"] for t in tracks if t["bpm"]]
         sets.append({
             "id": sid,
+            "t0": t0,                    # epoch of the first play; internal only
             "date": dt.datetime.fromtimestamp(t0).date().isoformat(),
             "start": dt.datetime.fromtimestamp(t0).strftime("%H:%M"),
+            "end": dt.datetime.fromtimestamp(t_end).strftime("%H:%M"),
             "minutes": round(minutes, 1),
             "tracks": tracks,
             "n": len(tracks),
@@ -459,9 +461,17 @@ def build_stats(library, sets, all_plays):
 
 # The set the case study walks through. Chosen by hand over the automatic pick
 # below: it is a real four-hour New Year's Eve party, 93 tracks with 92% key
-# coverage, and the data carries the story on its own — Auld Lang Syne lands at
-# 23:59 without anyone having to annotate it. Pass --featured to use another.
+# coverage, and the data carries the story on its own — Auld Lang Syne starts at
+# 23:57:41 and runs through the countdown without anyone having to annotate it.
+# Pass --featured to use another.
 FEATURED_DEFAULT = "2947-1"
+
+# The two sets the case study compares. The history contains exactly two New
+# Year's Eve parties, twelve months apart, and putting them side by side is the
+# only controlled experiment in the whole dataset: same night of the year, same
+# job, same room-sized audience, a year of practice in between. Pass --compare
+# to use a different pair.
+COMPARE_DEFAULT = ("2947-1", "6673-1")
 
 
 def pick_featured(sets):
@@ -469,6 +479,136 @@ def pick_featured(sets):
     def score(s):
         return s["n"] * (0.4 + s["key_coverage"]) * min(1.6, s["minutes"] / 90.0)
     return max(sets, key=score) if sets else None
+
+
+def median(xs):
+    xs = sorted(xs)
+    return xs[len(xs) // 2] if xs else None
+
+
+def next_midnight(t0):
+    """The midnight this set is heading toward, as an epoch.
+
+    For a New Year's Eve set the interesting origin is not when the set started,
+    it is the countdown. Anchoring the x axis here is what lets two nights of
+    different length share one axis: both cross zero at the same instant.
+    """
+    d = dt.datetime.fromtimestamp(t0)
+    return dt.datetime.combine(d.date() + dt.timedelta(days=1), dt.time(0, 0)).timestamp()
+
+
+def build_one(s):
+    """One set, shaped for the comparison: tracks carry minutes-from-midnight."""
+    mid = next_midnight(s["t0"])
+    offset = (s["t0"] - mid) / 60.0          # negative: the set starts before midnight
+    tracks = []
+    for t in s["tracks"]:
+        c = dict(t)
+        c["m"] = round(offset + t["t"], 2)   # minutes relative to midnight
+        tracks.append(c)
+
+    trs = transitions(s["tracks"])
+    deltas = [abs(t["bpm_delta"]) for t in trs if t["bpm_delta"] is not None]
+    moves = collections.Counter(t["move"] for t in trs if t["move"])
+    mv_total = sum(moves.values()) or 1
+    bpms = [t["bpm"] for t in s["tracks"] if t["bpm"]]
+
+    # The last record of the old year and the first of the new one. Found by
+    # timestamp, never by title: hardcoding "auld lang syne" would break the
+    # moment a different night got featured, and the point of the whole section
+    # is that nothing in the pipeline knows what New Year's Eve is.
+    before = [t for t in tracks if t["m"] < 0]
+    after = [t for t in tracks if t["m"] >= 0]
+    midnight = {
+        "last_of_year": before[-1] if before else None,
+        "first_of_year": after[0] if after else None,
+    }
+
+    return {
+        "id": s["id"],
+        "year": int(s["date"][:4]),
+        "date": s["date"],
+        "start": s["start"],
+        "end": s["end"],
+        "minutes": s["minutes"],
+        "device": s["device"],
+        "n": s["n"],
+        "offset": round(offset, 2),
+        "tracks": tracks,
+        "transitions": trs,
+        "midnight": midnight,
+        "summary": {
+            "tracks": s["n"],
+            "minutes": s["minutes"],
+            "key_coverage": s["key_coverage"],
+            "bpm_median": s["bpm_median"],
+            "bpm_range": [min(bpms), max(bpms)] if bpms else [None, None],
+            "median_jump": median(deltas),
+            "within_2_pct": round(100.0 * sum(1 for d in deltas if d <= 2) / len(deltas), 1) if deltas else 0,
+            "within_6_pct": round(100.0 * sum(1 for d in deltas if d <= 6) / len(deltas), 1) if deltas else 0,
+            "clash_pct": round(100.0 * moves.get("clash", 0) / mv_total, 1),
+            "compatible_pct": round(100.0 * (mv_total - moves.get("clash", 0)) / mv_total, 1),
+            "longest_harmonic_run": longest_run(trs),
+            "streamed_pct": round(100.0 * sum(1 for t in s["tracks"] if t["streamed"]) / s["n"], 1),
+            "moves": dict(moves),
+        },
+    }
+
+
+# The paired numbers the comparison chart draws, in the order it draws them.
+# `better` says which direction is an improvement *at the thing being measured*,
+# or None where there is no better — a set is not worse for being shorter, and
+# the whole argument of this page is that leaving the wheel is a choice rather
+# than a mistake. `short` is what the chart uses when the viewport cannot afford
+# the full label; carried here rather than truncated in JS so the abbreviation
+# is a decision someone made rather than a string operation.
+COMPARE_METRICS = [
+    ("median_jump",  "Median tempo jump",         "Median jump", " BPM", "down"),
+    ("within_2_pct", "Transitions within ±2 BPM", "Within ±2",   "%",    "up"),
+    ("within_6_pct", "Transitions within ±6 BPM", "Within ±6",   "%",    "up"),
+    ("clash_pct",    "Transitions off the wheel", "Off the wheel", "%",  None),
+    ("key_coverage", "Tracks with a key",         "Keyed",       "%",    None),
+    ("minutes",      "Length",                    "Length",      " min", None),
+    ("tracks",       "Tracks played",             "Tracks",      "",     None),
+]
+
+
+def build_compare(sets, ids):
+    picked = []
+    for sid in ids:
+        s = next((x for x in sets if x["id"] == sid), None)
+        if s is None:
+            sys.exit("No set with id %s. Available: %s"
+                     % (sid, ", ".join(x["id"] for x in sets)))
+        picked.append(build_one(s))
+    picked.sort(key=lambda p: p["date"])
+
+    metrics = []
+    for key, label, short, unit, better in COMPARE_METRICS:
+        vals = []
+        for p in picked:
+            v = p["summary"][key]
+            if key == "key_coverage" and v is not None:
+                v = round(100.0 * v, 1)          # stored as a fraction
+            vals.append(v)
+        metrics.append({"key": key, "label": label, "short": short,
+                        "unit": unit, "better": better, "values": vals})
+
+    return {
+        "meta": {
+            "source": "Serato DJ Pro history (real data)",
+            "note": "The two New Year's Eve sets in the history, twelve months apart.",
+            "ids": [p["id"] for p in picked],
+            "years": [p["year"] for p in picked],
+            # The axis both nights share, in minutes either side of midnight.
+            "m_domain": [
+                math.floor(min(t["m"] for p in picked for t in p["tracks"]) / 10) * 10,
+                math.ceil(max(t["m"] for p in picked for t in p["tracks"]) / 10) * 10,
+            ],
+        },
+        "sets": picked,
+        "metrics": metrics,
+    }
 
 
 def write(path, obj):
@@ -481,6 +621,9 @@ def main():
     ap.add_argument("--input", default=DEFAULT_INPUT)
     ap.add_argument("--featured", default=None,
                     help="set id, e.g. 8717-1")
+    ap.add_argument("--compare", default=None,
+                    help="two set ids to compare, comma separated, "
+                         "e.g. 2947-1,6673-1")
     args = ap.parse_args()
 
     session_dir = os.path.join(args.input, "History", "Sessions")
@@ -509,6 +652,15 @@ def main():
         if featured is None:
             featured = pick_featured(sets)
 
+    compare_ids = ([s.strip() for s in args.compare.split(",")]
+                   if args.compare else list(COMPARE_DEFAULT))
+    have = {s["id"] for s in sets}
+    compare = (build_compare(sets, compare_ids)
+               if all(i in have for i in compare_ids) else None)
+    if compare is None:
+        print("  ! skipping compare.json — %s not in this history"
+              % ", ".join(i for i in compare_ids if i not in have))
+
     stats = build_stats(library, sets, all_plays)
 
     os.makedirs(OUT, exist_ok=True)
@@ -520,8 +672,11 @@ def main():
     # need the summary, and this keeps the payload small.
     write(os.path.join(OUT, "sets.json"), {
         "meta": {"sets": len(sets)},
-        "rows": [{k: v for k, v in s.items() if k != "tracks"} for s in sets],
+        "rows": [{k: v for k, v in s.items() if k not in ("tracks", "t0")}
+                 for s in sets],
     })
+    if compare:
+        write(os.path.join(OUT, "compare.json"), compare)
     if featured:
         trs = transitions(featured["tracks"])
         write(os.path.join(OUT, "featured.json"), {
@@ -557,6 +712,13 @@ def main():
         print("  featured set %s: %s, %d tracks, %.0f min, longest harmonic run %d"
               % (featured["id"], featured["date"], featured["n"], featured["minutes"],
                  longest_run(transitions(featured["tracks"]))))
+    if compare:
+        print("  compare: " + " vs ".join(
+            "%s (%s, %d tracks)" % (p["year"], p["id"], p["n"])
+            for p in compare["sets"]))
+        for m in compare["metrics"]:
+            print("    %-28s %s" % (m["label"], "  ->  ".join(
+                "%s%s" % (v, m["unit"]) for v in m["values"])))
 
 
 if __name__ == "__main__":

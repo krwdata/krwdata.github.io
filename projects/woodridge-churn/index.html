@@ -34,7 +34,7 @@
         <div class="cs-fact"><dt>Fleet</dt><dd>100K+ connected devices, four SKUs</dd></div>
         <div class="cs-fact"><dt>Grain</dt><dd>Weekly, % of cooks affected</dd></div>
         <div class="cs-fact"><dt>Stack</dt><dd>dbt on PostgreSQL / TimescaleDB, Grafana, R</dd></div>
-        <div class="cs-fact cs-fact--hi"><dt>Outcome</dt><dd>Two components identified as drivers of hardware-caused churn</dd></div>
+        <div class="cs-fact cs-fact--hi"><dt>Outcome</dt><dd>Confirmed the component revision already in flight; refresh kept the current bill of materials</dd></div>
       </dl>
     </div>
   </section>
@@ -57,8 +57,25 @@
       </div>
 
       <div class="prose">
-        <p>The telemetry existed. Every connected grill reports alerts — fan, igniter, auger, temperature sensor, over-temperature, plus a long tail of things that are not failures at all. Nobody had ever aggregated it by component and looked at it over time.</p>
+        <p>The telemetry existed. Every connected grill reports alerts across five hardware components, plus a long tail of things that are not failures at all. Nobody had ever aggregated it by component and looked at it over time.</p>
+      </div>
 
+      <div class="callout callout--scale">
+        <h4>The scale I work at</h4>
+        <div class="scale-figs">
+          <div class="scale-fig">
+            <span class="stat-value num" data-count="1.4" data-dp="1" data-unit="M">0</span>
+            <p>connected devices in the warehouse</p>
+          </div>
+          <div class="scale-fig">
+            <span class="stat-value num" data-count="46.9" data-dp="1" data-unit="M">0</span>
+            <p>individual cooks recorded against them</p>
+          </div>
+        </div>
+        <p>That is the whole estate across every product line, and it is the haystack every model on this site was built inside. The Woodridge family below is one slice of it — 100K+ devices, four SKUs — which is the point: at this size, a question like "which component should we change" cannot be answered by looking, only by modelling.</p>
+      </div>
+
+      <div class="prose">
         <p>So I built a small dbt project against the IoT warehouse: a staging model that isolates the device family, and a core model that rolls alerts up by week, device type and error category. Three decisions in that model did most of the work:</p>
 
         <ul>
@@ -73,6 +90,7 @@
       <div class="callout">
         <h4>A note on the numbers on this page</h4>
         <p>Every chart here is generated from a seeded synthetic model that preserves the shape of the real analysis — the fleet ramp, the seasonality, the ranking of components, the bug — and none of its values. The generator is <a href="https://github.com/krwdata/krwdata.github.io/blob/main/data/generators/gen_woodridge.py" data-code="data/generators/gen_woodridge.py" rel="noopener">gen_woodridge.py</a>, and the method is worth as much as the result.</p>
+        <p><strong>The five components are anonymised as A through E.</strong> Which physical part each letter stands for is not mine to publish — a reliability ranking for a named product line belongs to the company that owns the fleet. Nothing below depends on it. The argument is about which errors end a customer relationship and which ones only look alarming in a log, and that reads identically with letters.</p>
       </div>
     </section>
 
@@ -107,48 +125,48 @@
           </div>
 
           <div class="scrolly-steps">
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="spike">
               <span class="step-n">01</span>
               <h3>A rate that can't exist</h3>
               <p>An error rate is cooks-with-an-error divided by cooks. It cannot exceed 100%. Mine reached four figures in some weeks, which is the most useful kind of bug: one that announces itself.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="zoom">
               <span class="step-n">02</span>
               <h3>The worst weeks are the smallest weeks</h3>
               <p>Zooming into the launch period explains half of it. Early on, the fleet is a few hundred devices and a week might contain a few dozen cooks. Any alert that had no matching cook session — an engineering unit, a dropped record — went into the numerator with nothing beneath it in the denominator. Against thirty-six cooks, a few hundred stray alerts produce a four-figure percentage.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="clocks">
               <span class="step-n">03</span>
               <h3>The other half: two clocks</h3>
               <p>Here are ten cooks either side of a single week boundary. Nothing is wrong with any of them. The problem is in how the two halves of my calculation decided which week each one belonged to.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="split">
               <span class="step-n">04</span>
               <h3>Two timestamps, two answers</h3>
-              <p>The denominator counted a cook by <span class="mono">start_time_of_cook</span> — the black dot. The numerator counted it by the alert's <span class="mono">observed_at</span> — the orange one. For most cooks those fall minutes apart and it makes no difference at all.</p>
+              <p>The denominator counted a cook by <span class="mono">start_time_of_cook</span> — <span class="ink-dot">the black dot</span>. The numerator counted it by the alert's <span class="mono">observed_at</span> — <span class="ink-mark">the orange one</span>. For most cooks those fall minutes apart and it makes no difference at all.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="boundary">
               <span class="step-n">05</span>
               <h3>Until the cook crosses midnight on Sunday</h3>
               <p>A brisket that goes on at nine on Saturday night and throws a sensor error at seven the next morning is counted in week N by one side of the fraction and week N+1 by the other. Do that for two years and some weeks accumulate errors with no cooks to divide them by.</p>
               <p>Five of these ten cooks straddle the boundary. In a fleet doing hundreds of thousands of cooks a week, that is not a rounding error — it is a systematic drift that never cancels out.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="anchor">
               <span class="step-n">06</span>
               <h3>One anchor</h3>
               <p>The fix is three lines: join the alerts through the cook session, anchor both sides of the fraction to the cook's start time, and drop alerts whose cook ID has no matching session at all. Same data, same query, same fleet. Watch the axis.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="taper">
               <span class="step-n">07</span>
               <h3>And now there's a signal</h3>
-              <p>With the noise gone, one series moves and four don't. Temperature-sensor errors run elevated for the first half of the timeline and taper through the second, after a revised component enters production. The taper is slow rather than a cliff, which is what you'd expect: units built with the earlier part keep shipping and stay in the field for years.</p>
-              <p>That result mattered for a reason beyond the chart. The sensor issue was already known and already fixed. The model recovered it independently, from telemetry alone, without being told to look — which is how you find out whether a model is worth trusting on the things you don't already know.</p>
+              <p>With the noise gone, one series moves and four don't. Component A runs elevated for the first half of the timeline and tapers through the second, after a revised part enters production. The taper is slow rather than a cliff, which is what you'd expect: units built with the earlier version keep shipping and stay in the field for years.</p>
+              <p>That result mattered for a reason beyond the chart. This issue was already known and a revision was already in production. The model recovered it independently, from telemetry alone, without being told to look — which is how you find out whether a model is worth trusting on the things you don't already know.</p>
             </div></div>
           </div>
         </div>
@@ -183,15 +201,15 @@
       </div>
 
       <div class="prose">
-        <p>Igniter errors are the clearest example. The igniter fires, the grill doesn't light, an error is logged. That happens when the igniter has failed — and it happens when the hopper is empty. The alert is identical. Raw error frequency counts both, so a ranking of error frequency is partly a ranking of how often people run out of pellets.</p>
+        <p>Component B is the clearest example. It runs, the grill doesn't light, an error is logged. That happens when the part has failed — and it happens when the hopper is empty. The alert is identical. Raw error frequency counts both, so a ranking of error frequency is partly a ranking of how often people run out of pellets.</p>
 
-        <p>High-temperature events have the same problem in reverse: they spike in summer and during long cooks, and mostly describe what was being cooked rather than the grill's condition.</p>
+        <p>Component C has the same problem in reverse: its events spike in summer and during long cooks, and mostly describe what was being cooked rather than the grill's condition.</p>
 
         <p>So the frequency chart was accurate and not decision-grade. What the refresh team actually needed to know was not which error is most common. It was which error <em>ends the relationship</em>.</p>
       </div>
 
       <blockquote class="pull">
-        Do grills that throw an igniter error stop cooking, or do they carry on?
+        Do grills that throw this error stop cooking, or do they carry on?
         <cite>The question that reframed the project</cite>
       </blockquote>
     </section>
@@ -226,41 +244,41 @@
           </div>
 
           <div class="scrolly-steps">
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="fleet">
               <span class="step-n">01</span>
               <h3>Start with everything</h3>
               <p>Every connected device across the four SKUs in the family. Most of the interesting work in this model is deciding which of them the analysis is allowed to speak about.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="funnel">
               <span class="step-n">02</span>
               <h3>Active: five or more lifetime cooks</h3>
               <p>Plenty of grills are registered, used twice and forgotten. If someone never really started, their silence says nothing about the hardware. Five cooks is a low bar that removes a lot of noise.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="silence">
               <span class="step-n">03</span>
               <h3>Churned: eight weeks of silence</h3>
               <p>Long enough to survive a holiday, a bad month, and most of an off-season. Grilling is seasonal, so this threshold is doing real work — anything much shorter and the model would rediscover winter every year.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="target">
               <span class="step-n">04</span>
               <h3>Attributed: an error in the last five cooks</h3>
               <p>The device went quiet, and a qualifying hardware error appears inside its final five sessions. This is the most conservative attribution I could write: the error has to be visible in the last stretch of use, immediately before the silence.</p>
-              <p>Igniter errors that fire on the same cook as a pellet-level warning are excluded outright. That grill ran out of fuel; it didn't break.</p>
+              <p>Component B errors that fire on the same cook as a pellet-level warning are excluded outright. That grill ran out of fuel; it didn't break.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="rank">
               <span class="step-n">05</span>
               <h3>Now rank the components</h3>
               <p>This is the chart the refresh team could use. It is a different ranking from raw error frequency, because it weights each error by whether the owner ever came back.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="balance">
               <span class="step-n">06</span>
-              <h3>Two components, two thirds of it</h3>
-              <p>The temperature sensor and the igniter dominate. Over-temperature events are a distant third. Fan and auger errors are loud in the logs and almost never precede a grill going quiet — which is exactly the kind of thing you want to know before spending a bill of materials increase on them.</p>
+              <h3>Two components, two thirds of it — and both already understood</h3>
+              <p>Components A and B dominate. C is a distant third. D and E are loud in the logs and almost never precede a grill going quiet — which is exactly the kind of thing you want to know before spending a bill-of-materials increase on them.</p>
             </div></div>
           </div>
         </div>
@@ -273,6 +291,17 @@
         <p>There is a second caveat worth stating plainly: some devices in the fleet are our own test units. We don't maintain a separate database for them, so a fraction of the churn signal is engineers doing engineering things. It doesn't move the ranking, but it means the absolute counts should be read as an order of magnitude.</p>
 
         <p>I'd rather deliver a floor with its limits written down than a point estimate that quietly overclaims. The team using it is making a bill-of-materials decision; they need to know which way the number can be wrong.</p>
+      </div>
+
+      <div class="prose">
+        <h3>What it settled</h3>
+        <p>Component A came out on top on both measures: the most frequent hardware error in the fleet, and the one most likely to be the last thing a grill did before going quiet. That was not a surprise, and it was not supposed to be. The issue was already known and a revised part was already moving into production before this analysis existed. The model found it anyway, from telemetry alone, without being pointed at it.</p>
+
+        <p>That is the result I cared about most, and it is worth being precise about why. A model that mostly tells you things you already know is not useless — it is <em>calibrated</em>. Independently recovering a failure that engineering had already diagnosed by other means is the evidence that the same method can be trusted on the components nobody has flagged yet. Without that check, the ranking is just a chart.</p>
+
+        <p>And on those other components, the answer was the useful kind of boring. Once A is set aside, nothing in the ranking justified a change: C is a distant third, and D and E are among the loudest categories in the logs while almost never preceding a grill going quiet. The refresh went ahead on the current bill of materials — with A's revision already in it — rather than reopening component selection. <strong>Confidence that you do not need to change something is a real deliverable.</strong> It never shows up as a line item, and it is usually cheaper than the alternative.</p>
+
+        <p>The floor caveat above applies to that conclusion too, and it is the honest limit of it: the model can only clear components it can see fail.</p>
       </div>
 
       <div class="prose">
@@ -293,8 +322,8 @@
           <p>Connected devices across four SKUs, modelled from raw telemetry to a weekly reliability metric</p>
         </div>
         <div class="impact-cell">
-          <span class="stat-value num">2</span>
-          <p>Components identified as the dominant drivers of hardware-attributed churn, feeding refresh planning</p>
+          <span class="stat-value num">0</span>
+          <p>Further component-level changes the refresh needed — the model confirmed the revision already in flight and cleared the rest</p>
         </div>
         <div class="impact-cell">
           <span class="stat-value num" data-count="1" data-unit=" bug">0</span>

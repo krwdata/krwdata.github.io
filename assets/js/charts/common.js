@@ -118,6 +118,93 @@
   /* Not a slot: the fill for anything deliberately recessive. */
   var NEUTRAL = '#6B7684';
 
+  /* --- the Camelot ring ---------------------------------------------------
+     Twelve hues, one per Camelot number, because that is the convention every
+     DJ already reads: Mixed In Key invented the colour coding and it is how a
+     key gets recognised at a glance. They have never published the values and
+     Serato uses its own, so this is the convention *computed* rather than
+     eyedropped off a screenshot.
+
+     How: hue starts at 52.5° — the OKLCH hue of the brand orange #E0700A, so
+     slot 1 is family with the rest of the site — and steps a clean 30° twelve
+     times. Lightness is pinned at L = 0.62 for all twelve and chroma is taken
+     to 90% of whatever that hue can reach in sRGB at that lightness. Pinning L
+     is what keeps the ring from reading as a lumpy rainbow: every wedge carries
+     the same visual weight, so opacity is free to mean track count and nothing
+     else. At L = 0.62 all twelve clear 3:1 against --offwhite (3.01–3.74) and
+     --panel (3.90–4.84), which is the gate for a filled shape.
+
+     THE DOCUMENTED EXCEPTION to rule 4 in the handoff: twelve hues 30° apart
+     cannot clear adjacent-pair separation under CVD, and these do not — 8/9
+     collapses to ΔOklab 0.005 under deuteranopia. That is acceptable *here and
+     only here* because hue is fully redundant with angular position: the wedge
+     for 9A is at nine o'clock whether or not you can see that it is blue, and
+     the numbers are printed outside the ring. Colour is a second encoding of
+     something the geometry already says. Do not lift this array out to carry
+     categories on any other chart. */
+  var CAMELOT = [
+    '#C76923', '#A87F24', '#888D24', '#29A125', '#299B7F', '#29979F',
+    '#2891BF', '#467FF3', '#8E65F3', '#CB2EE0', '#E42C93', '#EF2E41'
+  ];
+
+  /* '9A' / '9B' -> the hue for 9. A and B share a hue on purpose: that is what
+     "relative major/minor" means, and the inner/outer ring already says which
+     is which. */
+  function camelotColor(c) {
+    var n = parseInt(c, 10);
+    return (n >= 1 && n <= 12) ? CAMELOT[n - 1] : NEUTRAL;
+  }
+
+  /* Scatter one dot per track inside each key's slot on a Camelot wheel.
+     Lives here because the case study and the dashboard tile both draw this
+     wheel, and the tile is only a useful preview if it uses the SAME encoding —
+     a differently-encoded cousin teaches the reader the wrong thing first.
+     Two implementations would drift; this one cannot.
+
+     `wheel` is [{camelot, tracks}], `rings` is {A:[r0,r1], B:[r0,r1]}.
+     Returns [{key, ki, x, y}] in the wheel's own centred coordinates. */
+  function camelotDots(wheel, rings, opts) {
+    var o = opts || {};
+    var padA = o.padA === undefined ? 0.12 : o.padA;   // share of the wedge angle
+    var padR = o.padR === undefined ? 3.5 : o.padR;    // clearance at ring edges
+    var out = [];
+
+    /* Seeded, so the scatter is identical on every load. Math.random() would
+       make the wheel shimmer between visits and stop it being a stable object
+       you can point at in conversation. mulberry32. */
+    function rng(seed) {
+      var a = seed >>> 0;
+      return function () {
+        a += 0x6D2B79F5;
+        var t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    wheel.forEach(function (d, ki) {
+      var n = parseInt(d.camelot, 10);
+      var ring = rings[d.camelot.slice(-1)];
+      if (!ring || !(n >= 1 && n <= 12)) return;
+      var angle = (n - 1) / 12 * Math.PI * 2 - Math.PI / 2;
+      var r0 = ring[0] + padR, r1 = ring[1] - padR;
+      var half = (Math.PI / 12) * (1 - padA);
+      var rand = rng(9973 + ki * 7919);
+      for (var i = 0; i < d.tracks; i++) {
+        var a = angle - half + rand() * half * 2;
+        /* sqrt keeps the scatter uniform per unit AREA. A linear radius would
+           crowd dots against the ring's inner edge, and the outer ring would
+           look sparser than the inner one at equal counts — an artefact of the
+           geometry rather than anything in the data. */
+        var rr = Math.sqrt(r0 * r0 + rand() * (r1 * r1 - r0 * r0));
+        out.push({ key: d.camelot, ki: ki,
+                   x: Math.cos(a) * rr, y: Math.sin(a) * rr });
+      }
+    });
+    return out;
+  }
+
   function loadJSON(paths) {
     return Promise.all(paths.map(function (p) {
       return fetch(p).then(function (r) {
@@ -145,6 +232,7 @@
   window.CH = {
     frame: frame, annotate: annotate, show: show, drawIn: drawIn,
     fmt: fmt, PALETTE: PALETTE, NEUTRAL: NEUTRAL, DUR: DUR, reduced: reduced,
+    CAMELOT: CAMELOT, camelotColor: camelotColor, camelotDots: camelotDots,
     loadJSON: loadJSON, loadFail: loadFail
   };
 })();

@@ -55,7 +55,10 @@
 }
 .panel--wide { grid-column: span 3; }
 .panel--full { grid-column: span 6; }
-.panel--four { grid-column: span 4; }
+/* There was a `panel--four` (span 4) here for the About tile. With the rows
+   above it filling exactly 6 + 6, a 4-span last row left two dead columns on
+   the right and squeezed the skills chips until they clipped against the
+   panel's overflow: hidden. About is the last tile, so it takes the whole row. */
 
 a.panel:hover, a.panel:focus-visible { border-color: var(--accent); transform: translateY(-3px); background: var(--panel-hi); }
 a.panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -104,6 +107,11 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--accent); trans
 .about-bio p { font-size: 15px; color: var(--ash); }
 .about-bio p strong { color: var(--offwhite); font-weight: 600; }
 .skill-block { margin-bottom: 16px; }
+/* These are the only chips long enough to exceed their own column
+   ("Dewesoft Sensors & Instrumentation \u00b7 2020"). A chip wider than its column
+   cannot wrap to the next line, so nowrap pushes it under the panel's
+   overflow: hidden and it is silently clipped. Let these break instead. */
+.about-skills .chip { white-space: normal; }
 .skill-block h4 { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ash-dim); margin: 0 0 8px; font-weight: 400; }
 
 /* Placeholder panel — makes the roadmap look planned, not missing. */
@@ -136,7 +144,7 @@ a.panel:hover::after, a.panel:focus-visible::after { color: var(--accent); trans
 @media (max-width: 860px) {
   .hero-grid { grid-template-columns: 1fr; align-items: start; }
   .panels { grid-template-columns: 1fr; }
-  .panel, .panel--wide, .panel--full, .panel--four { grid-column: 1 / -1; }
+  .panel, .panel--wide, .panel--full { grid-column: 1 / -1; }
 }
 @media (max-width: 560px) {
   .ticker { grid-template-columns: repeat(2, 1fr); }

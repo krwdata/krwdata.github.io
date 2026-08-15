@@ -41,3 +41,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# content-audit.py writes these before rewriting a page
+*.bak

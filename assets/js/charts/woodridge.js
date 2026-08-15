@@ -11,19 +11,22 @@
   'use strict';
 
   var B = document.documentElement.getAttribute('data-base') || '';
-  var CATS = ['RTD', 'IGNITOR', 'HIGH_TEMP', 'FAN', 'AUGER'];
-  /* Slots 1,2,3,4,6 of the categorical palette. The temperature sensor keeps
-     slot 1 because it is the series the story is about; the others are still
-     given real hues rather than five greys, because the legend maps colour to
-     category and five greys cannot do that. Focus is expressed through opacity
-     and stroke weight instead. */
+  /* Components are anonymised — see the disclosure on the page. The real work
+     named five physical parts, but the ranking of a named product line's
+     failures is the employer's information, not mine, and none of the method
+     depends on which letter is which. A is the series the story is about. */
+  var CATS = ['COMP_A', 'COMP_B', 'COMP_C', 'COMP_D', 'COMP_E'];
+  /* Slots 1,2,3,4,6 of the categorical palette. A keeps slot 1 because it is
+     the series the story is about; the others are still given real hues rather
+     than five greys, because the legend maps colour to category and five greys
+     cannot do that. Focus is expressed through opacity and stroke weight. */
   var COLOR = {
-    RTD: '#E0700A', IGNITOR: '#4A93D6', HIGH_TEMP: '#D3468F',
-    FAN: '#B08E18', AUGER: '#22A8AE'
+    COMP_A: '#E0700A', COMP_B: '#4A93D6', COMP_C: '#D3468F',
+    COMP_D: '#B08E18', COMP_E: '#22A8AE'
   };
   var LABEL = {
-    RTD: 'Temp sensor (RTD)', IGNITOR: 'Igniter', HIGH_TEMP: 'High temp',
-    FAN: 'Fan', AUGER: 'Auger'
+    COMP_A: 'Component A', COMP_B: 'Component B', COMP_C: 'Component C',
+    COMP_D: 'Component D', COMP_E: 'Component E'
   };
 
   var D = {};              // loaded data
@@ -50,7 +53,19 @@
     interG.append('text').attr('class', 'chart-sub').attr('dy', -6)
       .attr('text-anchor', 'middle').text('COMPONENT REVISION');
 
-    var linesG = f.g.append('g');
+    /* The lines have to be clipped to the plot box, and only the lines.
+       `.graphic-body svg` is overflow: visible on purpose — end labels and
+       annotations live outside the axes. But a path always holds all 104 weeks,
+       so the moment a step zooms x to [0, 16] the remaining weeks map past the
+       right edge and keep drawing, straight over the caption and out of the
+       card. Clip the series group; leave labels and annotations free.
+       A few px of vertical slack so a 2.8px stroke is not shaved at 0%. */
+    var clipId = 'wr-rates-clip';
+    f.svg.append('defs').append('clipPath').attr('id', clipId)
+      .append('rect').attr('x', 0).attr('y', -6)
+      .attr('width', f.iw).attr('height', f.ih + 12);
+
+    var linesG = f.g.append('g').attr('clip-path', 'url(#' + clipId + ')');
     var labelsG = f.g.append('g');
     var annotG = f.g.append('g');
 
@@ -75,7 +90,7 @@
     var paths = linesG.selectAll('path').data(series).enter().append('path')
       .attr('class', 'series-line')
       .attr('stroke', function (d) { return COLOR[d.key]; })
-      .attr('stroke-width', function (d) { return d.key === 'RTD' ? 2.4 : 1.6; });
+      .attr('stroke-width', function (d) { return d.key === 'COMP_A' ? 2.4 : 1.6; });
 
     // Only the focused series gets an in-chart label; the rest are identified
     // by the legend above. Five labels at the right edge always collide.
@@ -95,7 +110,7 @@
       }).join('');
     }
 
-    var state = { mode: 'fixed', t: 1, focus: null, zoom: false };
+    var state = { mode: 'fixed', t: 1, focus: null, zoom: false, hundred: false };
 
     function values(s) {
       // t = 0 broken, 1 corrected. Interpolating point by point is what makes
@@ -130,7 +145,10 @@
     axes();
 
     function update(s) {
-      var dur = CH.reduced ? 0 : 950;
+      // A step may ask for a slower move than the default. The 1200% -> single
+      // digits collapse is the payoff of the whole section and it deserves
+      // longer than a normal state change; everything else stays at 950.
+      var dur = CH.reduced ? 0 : (s.dur || 950);
       var tFrom = state.t;
       var yFrom = y.domain().slice();
       var xFrom = x.domain().slice();
@@ -161,8 +179,20 @@
           };
         });
 
-      CH.show(hundredG, state.t < 0.5, dur);
-      CH.show(interG, state.focus === 'RTD', dur);
+      /* The 100% rule earns its place on the opening step, where the whole
+         argument is that the series sit above a line they cannot cross. Once
+         the story zooms into the launch weeks it is just a dashed rule lying
+         across the curves with its label colliding with them, so a step can
+         wave it off. Default is the old behaviour — visible while broken. */
+      state.hundred = s.hundred === undefined ? (state.t < 0.5) : s.hundred;
+      CH.show(hundredG, state.hundred, dur);
+      // Drifting it down as it fades reads as "getting out of the way" rather
+      // than as the chart losing an element. Named, so it cannot cancel the
+      // opacity transition CH.show is running on the same node (§9).
+      hundredG.transition('shift').duration(dur).ease(d3.easeCubicInOut)
+        .attr('transform', state.hundred ? 'translate(0,0)' : 'translate(0,30)');
+
+      CH.show(interG, state.focus === 'COMP_A', dur);
 
       paths.transition().duration(dur)
         .attr('opacity', function (d) {
@@ -170,7 +200,7 @@
           return d.key === state.focus ? 1 : 0.16;
         })
         .attr('stroke-width', function (d) {
-          return d.key === state.focus ? 2.8 : (d.key === 'RTD' ? 2.2 : 1.5);
+          return d.key === state.focus ? 2.8 : (d.key === 'COMP_A' ? 2.2 : 1.5);
         });
       endLabels.transition().duration(dur)
         .style('opacity', function (d) { return d.key === state.focus ? 1 : 0; });
@@ -400,16 +430,16 @@
   // One entry per step, in document order.
   var TRENDS_STEPS = [
     { viz: 'rates', state: { t: 0, focus: null }, cap: 'First version of the model. Five hardware error categories, weekly.' },
-    { viz: 'rates', state: { t: 0, focus: null, xzoom: [0, 16] }, cap: 'The worst weeks are the launch weeks — a denominator of a few dozen cooks.' },
+    { viz: 'rates', state: { t: 0, focus: null, xzoom: [0, 16], hundred: false }, cap: 'The worst weeks are the launch weeks — a denominator of a few dozen cooks.' },
     { viz: 'anchor', state: { mode: 'cooks' }, cap: 'Ten cooks either side of one week boundary.' },
     { viz: 'anchor', state: { mode: 'alerts' }, cap: 'Black dot: when the cook started. Orange dot: when the alert fired.' },
     { viz: 'anchor', state: { mode: 'split' }, cap: 'Highlighted cooks are counted in one week by the denominator and the next by the numerator.' },
-    { viz: 'rates', state: { t: 1, focus: null }, cap: 'Same query, one anchor. Note the axis.' },
+    { viz: 'rates', state: { t: 1, focus: null, dur: 2400 }, cap: 'Same query, one anchor. Note the axis.' },
     {
       viz: 'rates', state: {
-        t: 1, focus: 'RTD',
-        annot: { cat: 'RTD', week: 58, dx: 40, dy: -46, label: 'Component revision', sub: 'ships into production' }
-      }, cap: 'The temperature sensor series is the only one that moves.'
+        t: 1, focus: 'COMP_A',
+        annot: { cat: 'COMP_A', week: 58, dx: 40, dy: -46, label: 'Component revision', sub: 'ships into production' }
+      }, cap: 'One series moves. Four do not.'
     }
   ];
 

@@ -53,7 +53,7 @@
     CH.loadJSON([B + 'data/woodridge/trends.json']).then(function (r) {
       var rows = r[0].rows, meta = r[0].meta;
       var f = mini(el, { right: 10 });
-      var cats = ['FAN', 'AUGER', 'HIGH_TEMP', 'IGNITOR', 'RTD'];
+      var cats = ['COMP_D', 'COMP_E', 'COMP_C', 'COMP_B', 'COMP_A'];
       var x = d3.scaleLinear().domain(d3.extent(rows, function (d) { return d.week; })).range([0, f.iw]);
       var y = d3.scaleLinear().domain([0, d3.max(rows, function (d) { return d.rate; })]).range([f.ih, 0]);
       var line = d3.line().x(function (d) { return x(d.week); })
@@ -68,9 +68,9 @@
       var paths = cats.map(function (c) {
         var data = rows.filter(function (d) { return d.category === c; });
         return f.g.append('path').datum(data).attr('class', 'series-line')
-          .attr('stroke', c === 'RTD' ? 'var(--accent)' : 'var(--ash-dim)')
-          .attr('stroke-width', c === 'RTD' ? 1.9 : 1)
-          .attr('opacity', c === 'RTD' ? 1 : 0.45)
+          .attr('stroke', c === 'COMP_A' ? 'var(--accent)' : 'var(--ash-dim)')
+          .attr('stroke-width', c === 'COMP_A' ? 1.9 : 1)
+          .attr('opacity', c === 'COMP_A' ? 1 : 0.45)
           .attr('d', line);
       });
       whenVisible(el, function () {
@@ -115,31 +115,48 @@
       var R = Math.min(f.iw, f.ih) / 2 - 2;
       var g = f.g.append('g').attr('transform', 'translate(' + f.iw / 2 + ',' + f.ih / 2 + ')');
       var rings = { B: [R * 0.66, R], A: [R * 0.32, R * 0.66] };
-      // Floor is well above zero: a near-transparent orange over the panel reads
-      // as mud rather than as a low count.
-      var op = d3.scaleSqrt().domain([0, d3.max(wheel, function (d) { return d.tracks; })]).range([0.16, 1]);
+      // Same encoding as the case-study wheel: twelve hues for the key, and one
+      // dot per track scattered in its slot so density is the count. The tile
+      // has to be a real preview of the page it links to, which means the same
+      // hues AND the same encoding — a differently-encoded cousin is worse than
+      // no preview, because it teaches the reader the wrong thing first. The
+      // placement itself is CH.camelotDots, shared with dj.js so the two cannot
+      // drift; only the dot size and alpha are tuned down for tile scale.
       var arc = d3.arc().padAngle(0.02).cornerRadius(1);
 
-      var w = g.selectAll('path').data(wheel).enter().append('path')
-        .attr('d', function (d) {
-          var n = parseInt(d.camelot, 10), letter = d.camelot.slice(-1);
-          var a = (n - 1) / 12 * Math.PI * 2;
-          var rr = rings[letter];
-          return arc({
-            innerRadius: rr[0], outerRadius: rr[1],
-            startAngle: a - Math.PI / 12, endAngle: a + Math.PI / 12
-          });
-        })
-        .attr('fill', function (d) {
-          return d.camelot.slice(-1) === 'B' ? 'var(--accent)' : 'var(--pink)';
-        })
-        .attr('fill-opacity', 0)
+      function wedge(d) {
+        var n = parseInt(d.camelot, 10), rr = rings[d.camelot.slice(-1)];
+        var a = (n - 1) / 12 * Math.PI * 2;
+        return arc({
+          innerRadius: rr[0], outerRadius: rr[1],
+          startAngle: a - Math.PI / 12, endAngle: a + Math.PI / 12
+        });
+      }
+
+      // The empty band, so the ring reads as a ring at tile size.
+      g.selectAll('path.band').data(wheel).enter().append('path').attr('class', 'band')
+        .attr('d', wedge)
+        .attr('fill', function (d) { return CH.camelotColor(d.camelot); })
+        .attr('fill-opacity', 0.16)
         .attr('stroke', 'var(--panel)').attr('stroke-width', 0.8);
 
+      var dots = g.selectAll('circle')
+        .data(CH.camelotDots(wheel, rings, { padA: 0.14, padR: 1.6 }))
+        .enter().append('circle')
+        .attr('cx', function (d) { return d.x; })
+        .attr('cy', function (d) { return d.y; })
+        .attr('r', 0)
+        .attr('fill', function (d) { return CH.camelotColor(d.key); })
+        // Brighter than the case study's 0.30: these sit on the dark panel, not
+        // on paper, and a dot that reads at 0.30 on white disappears on onyx.
+        .attr('fill-opacity', 0.42);
+
       whenVisible(el, function () {
-        w.transition().duration(reduced ? 0 : 900)
-          .delay(function (d, i) { return reduced ? 0 : i * 22; })
-          .attr('fill-opacity', function (d) { return op(d.tracks); });
+        // The dots arrive key by key — the tile's one bit of motion, and it is
+        // the measurement doing it rather than a fade.
+        dots.transition().duration(reduced ? 0 : 620)
+          .delay(function (d) { return reduced ? 0 : d.ki * 22; })
+          .attr('r', Math.max(0.55, R * 0.0146));
       });
     }).catch(function () { el.remove(); });
   }

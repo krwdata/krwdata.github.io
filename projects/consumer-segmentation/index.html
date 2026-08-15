@@ -103,59 +103,59 @@
           </div>
 
           <div class="scrolly-steps">
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="funnel">
               <span class="step-n">01</span>
               <h3>Most rows are not a cook</h3>
               <p>Filters first, and they are opinionated: drop cooks under five minutes, drop cooks with no valid starting set point, drop anything with an average temperature low enough to be a sensor glitch rather than food.</p>
               <p>One cook in the raw data ran for seventeen days. Finding it was a good reminder that "average cook duration" is a number you have to earn.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="fleet">
               <span class="step-n">02</span>
               <h3>One row per device</h3>
               <p>Then roll cooks up to the device that did them: average duration, average set temperature, how often the smoke mode is on, what share of cooks happen at the weekend, how many distinct set points get used in a single cook, how often someone raises the target mid-cook.</p>
               <p>That last pair matters more than it looks. They are the difference between someone operating a grill and someone managing a fire.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="scatter">
               <span class="step-n">03</span>
               <h3>The cloud, before anyone labels it</h3>
               <p>Every dot is one device, positioned by how long it cooks and how hot. There is structure in here — the dense low-left mass, the wisps heading right and up — but nothing that resolves into groups by eye. Which is the entire argument for clustering rather than eyeballing.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="elbow">
               <span class="step-n">04</span>
               <h3>Choosing k honestly</h3>
               <p>Run k-means for every k from two to eight and plot how much variance each one leaves behind. There is no correct answer, only the point where another split stops buying much — and then a judgement call about whether the new group is a real behaviour or a slice of an existing one.</p>
               <p>I ran four, five and six. Four was too coarse to be actionable. Five split a genuinely distinct very-long-cook group out of the low-and-slow crowd. Six was the last split that produced a group I could describe in a sentence without hedging.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="clusters">
               <span class="step-n">05</span>
               <h3>Six segments</h3>
               <p>And they hold up under a different method: hierarchical clustering on the same features recovers substantially the same groups. That agreement is the closest thing to validation an unsupervised model gets, and it is worth doing before anyone builds a campaign on top of it.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="mirror">
               <span class="step-n">06</span>
               <h3>The same devices, a different projection</h3>
               <p>Swap the vertical axis to smoke-mode usage and the groups reorganise. No dot has moved in feature space — this is the same six clusters seen from another angle, which is a useful thing to show people who are suspicious that the segments are an artefact of one chart.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="rank">
               <span class="step-n">07</span>
               <h3>The biggest group is the least romantic</h3>
               <p>A third of devices set one temperature in the middle of the dial and leave it there. Not low and slow, not searing — roasting, at 350, once or twice a week.</p>
               <p>That was the finding that changed a conversation. The marketing image of this product category is a competition pit master. The modal user is making dinner.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="spike">
               <span class="step-n">08</span>
               <h3>And the smallest group is the loudest</h3>
               <p>At the other end: people who use three or four set points in a single cook and raise the target mid-way through more than half the time. Reverse sears, multi-stage cooks, active fire management. Small in number, and almost certainly the people who post about it.</p>
             </div></div>
 
-            <div class="step"><div class="step-card">
+            <div class="step"><div class="step-card" data-icon="midnight">
               <span class="step-n">09</span>
               <h3>Plus the ones who go all night</h3>
               <p>Ten-hour-plus cooks, mostly starting Friday or Saturday evening, smoke mode on for most of it. Behaviourally a subset of the long-burn crowd rather than a separate species — which is exactly the kind of thing a dendrogram tells you and a bar chart of segment sizes does not.</p>
@@ -244,9 +244,9 @@
           <span class="dir">Previous</span>
           <span class="ttl">Error trends & churn attribution</span>
         </a>
-        <a class="next" href="../anatomy-of-a-dj-set/index.html">
+        <a class="next" href="../NYE23-B2B-NYE24/index.html">
           <span class="dir">Next</span>
-          <span class="ttl">Anatomy of a DJ set</span>
+          <span class="ttl">DJ Analysis: NYE '23 B2B NYE '24</span>
         </a>
       </nav>
     </div>
