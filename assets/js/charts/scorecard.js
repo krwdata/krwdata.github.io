@@ -237,12 +237,25 @@
     var grillLine = d3.line().x(function (d) { return x(d.t); }).y(function (d) { return y(d.grill); });
     var grateLine = d3.line().x(function (d) { return x(d.t); }).y(function (d) { return y(d.grate); });
 
-    var pSet = f.g.append('path').datum(rows).attr('class', 'series-line')
+    /* Every path holds the WHOLE run, and the close-up step narrows x to
+       [40, 66]. Everything outside that window maps past the plot and keeps
+       drawing — and `.graphic-body svg` is `overflow: visible` on purpose, so
+       end labels and annotations can sit outside the axes, which means nothing
+       stops it. The lines ran across the caption and out of the card into the
+       step column. Clip the series only; labels and grades stay free.
+       A little vertical slack so a 2.1px stroke is not shaved at the extremes. */
+    var clipId = 'sc-trace-clip';
+    f.svg.append('defs').append('clipPath').attr('id', clipId)
+      .append('rect').attr('x', 0).attr('y', -8)
+      .attr('width', f.iw).attr('height', f.ih + 16);
+    var linesG = f.g.append('g').attr('clip-path', 'url(#' + clipId + ')');
+
+    var pSet = linesG.append('path').datum(rows).attr('class', 'series-line')
       .attr('stroke', 'var(--ink)').attr('stroke-width', 1.4)
       .attr('stroke-dasharray', '5 3').style('opacity', 0);
-    var pGrill = f.g.append('path').datum(rows).attr('class', 'series-line')
+    var pGrill = linesG.append('path').datum(rows).attr('class', 'series-line')
       .attr('stroke', 'var(--neutral)').attr('stroke-width', 1.5).style('opacity', 0);
-    var pGrate = f.g.append('path').datum(rows).attr('class', 'series-line')
+    var pGrate = linesG.append('path').datum(rows).attr('class', 'series-line')
       .attr('stroke', 'var(--series-1)').attr('stroke-width', 2.1).style('opacity', 0);
 
     var gradeG = f.g.append('g').style('opacity', 0);
