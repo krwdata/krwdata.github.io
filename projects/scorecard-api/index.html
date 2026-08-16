@@ -33,7 +33,7 @@
       <dl class="cs-facts">
         <div class="cs-fact"><dt>Built with</dt><dd>R + Plumber, Docker, systemd</dd></div>
         <div class="cs-fact"><dt>Trigger</dt><dd>curl from the DAQ sequencer at test completion</dd></div>
-        <div class="cs-fact"><dt>Returns</dt><dd>Scored plot, graded table, interactive HTML</dd></div>
+        <div class="cs-fact"><dt>Returns</dt><dd>Scored plot, graded table, grate heat map, interactive HTML</dd></div>
         <div class="cs-fact cs-fact--hi"><dt>Outcome</dt><dd>30 min → 5 min, an 83% reduction</dd></div>
       </dl>
     </div>
@@ -135,8 +135,8 @@
 
             <div class="step"><div class="step-card" data-icon="docs">
               <span class="step-n">05</span>
-              <h3>Three outputs, ready to attach</h3>
-              <p>A scored plot as an image, the graded results table as an image, and an interactive plotly page for anyone who wants to zoom in on a specific event. The same analysis code the Shiny app used — that was a hard requirement, because two copies of an analysis is two analyses.</p>
+              <h3>Four outputs, ready to attach</h3>
+              <p>A scored plot as an image, the graded results table as an image, a heat map of the whole grate as an image, and an interactive plotly page for anyone who wants to zoom in on a specific event. The same analysis code the Shiny app used — that was a hard requirement, because two copies of an analysis is two analyses.</p>
             </div></div>
 
             <div class="step"><div class="step-card" data-icon="stairs">
@@ -182,7 +182,7 @@
 
       <div class="prose">
         <h3>The graded table</h3>
-        <p>This is the second of the three outputs, rebuilt here from the synthetic trace above.</p>
+        <p>This is the second of the four outputs, rebuilt here from the synthetic trace above.</p>
       </div>
       <div class="table-wrap">
         <div data-grades-table></div>
@@ -245,8 +245,8 @@
           <p>Manual data entry steps. The metadata comes from the rig that already has it</p>
         </div>
         <div class="impact-cell">
-          <span class="stat-value num">3</span>
-          <p>Output formats returned per request: scored plot, graded table, interactive HTML</p>
+          <span class="stat-value num">4</span>
+          <p>Outputs returned per request: scored plot, graded table, grate heat map, interactive HTML</p>
         </div>
       </div>
 

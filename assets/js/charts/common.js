@@ -218,6 +218,27 @@
     return out;
   }
 
+  /* Where a value label at the end of a horizontal bar can actually go.
+     Every bar chart here hangs its label at `end + gap`, and every one of them
+     breaks the same way: the widest bar's `end` is at or near the plot's right
+     edge, so the label starts in the margin and the rest of the string runs out
+     of the card. A fixed offset cannot work — the string changes per state and
+     the box is fluid — so measure, and flip the label inside the bar's end when
+     it will not fit after it.
+
+     `node` is the <text> (already carrying its final string), `end` the bar's
+     end in x-pixels, `f` the frame from frame(). Returns {x, anchor}. */
+  function barLabel(node, end, f, gap) {
+    var g = gap === undefined ? 10 : gap;
+    var w = 0;
+    try { w = node.getComputedTextLength(); } catch (e) { w = (node.textContent || '').length * 7; }
+    var after = end + g;
+    // 6px of clearance so a descender never touches the card's padding.
+    return (after + w <= f.iw + f.m.right - 6)
+      ? { x: after, anchor: 'start' }
+      : { x: Math.max(w + g, end - g), anchor: 'end' };
+  }
+
   function loadJSON(paths) {
     return Promise.all(paths.map(function (p) {
       return fetch(p).then(function (r) {
@@ -246,6 +267,6 @@
     frame: frame, annotate: annotate, show: show, drawIn: drawIn,
     fmt: fmt, PALETTE: PALETTE, NEUTRAL: NEUTRAL, DUR: DUR, reduced: reduced,
     CAMELOT: CAMELOT, camelotColor: camelotColor, camelotDots: camelotDots,
-    loadJSON: loadJSON, loadFail: loadFail
+    barLabel: barLabel, loadJSON: loadJSON, loadFail: loadFail
   };
 })();

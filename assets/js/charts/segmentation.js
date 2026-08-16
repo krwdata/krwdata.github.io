@@ -36,17 +36,36 @@
       .attr('y', y.bandwidth() / 2).attr('dy', '0.32em').attr('x', 10)
       .style('font-size', '13px').style('opacity', 0)
       .text(function (d) { return CH.fmt.int(d.value); });
-    g.append('text').attr('class', 'annot-sub').attr('y', y.bandwidth() + 16)
-      .style('font-size', '11.5px').text(function (d) { return d.detail; });
+    /* Each row is three stacked lines — label, bar, detail — and that needs
+       about 46px of vertical step. The graphic is 42vh on a phone, so six rows
+       get ~32px each and the detail line lands on top of the NEXT row's label,
+       running off the card as well because it is the longest string here. Drop
+       it when there is no room: the caption and the prose beside the chart say
+       the same thing, and a collision reads as a bug where an absence does not. */
+    if (y.step() >= 46) {
+      g.append('text').attr('class', 'annot-sub').attr('y', y.bandwidth() + 16)
+        .style('font-size', '11.5px').text(function (d) { return d.detail; });
+    }
 
     function update(s) {
       var upto = s.upto === undefined ? rows.length : s.upto;
       var dur = CH.reduced ? 0 : 700;
       g.select('rect').transition().duration(dur).delay(function (d, i) { return i * 140; })
         .attr('width', function (d, i) { return i < upto ? Math.max(3, x(d.value)) : 0; });
-      vals.transition().duration(dur).delay(function (d, i) { return i * 140 + 200; })
-        .attr('x', function (d, i) { return i < upto ? Math.max(3, x(d.value)) + 10 : 10; })
-        .style('opacity', function (d, i) { return i < upto ? 1 : 0; });
+      /* The first row's bar IS the full width — x's domain maxes at it — so
+         `end + 10` starts 10px past the plot in a 24px margin and "5,000,000"
+         ran outside the card. CH.barLabel measures and flips it inside.
+         Anchor is set before the transition rather than tweened: the label is
+         fading in from opacity 0 anyway, so the switch is never seen. */
+      vals.each(function (d, i) {
+        var on = i < upto;
+        var end = on ? Math.max(3, x(d.value)) : 0;
+        var p = CH.barLabel(this, end, f);
+        d3.select(this).attr('text-anchor', on ? p.anchor : 'start')
+          .transition().duration(dur).delay(i * 140 + 200)
+          .attr('x', on ? p.x : 10)
+          .style('opacity', on ? 1 : 0);
+      });
     }
     return { update: update };
   }

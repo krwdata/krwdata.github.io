@@ -405,9 +405,15 @@
       var dur = CH.reduced ? 0 : 780;
       g.select('rect').transition().duration(dur).delay(function (d, i) { return i * 90; })
         .attr('width', function (d) { return x(d.devices); });
-      g.select('text').transition().duration(dur).delay(function (d, i) { return i * 90 + 220; })
-        .attr('x', function (d) { return x(d.devices) + 8; })
-        .style('opacity', 1);
+      /* Measured, not offset: the top row is 100% of the funnel, so at narrow
+         widths "24,409 · 100%" started inside the right margin and ran past the
+         card. See CH.barLabel. */
+      g.select('text').each(function (d, i) {
+        var p = CH.barLabel(this, x(d.devices), f, 8);
+        d3.select(this).attr('text-anchor', p.anchor)
+          .transition().duration(dur).delay(i * 90 + 220)
+          .attr('x', p.x).style('opacity', 1);
+      });
     }
     return { update: update };
   }

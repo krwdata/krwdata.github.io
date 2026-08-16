@@ -199,7 +199,7 @@ def timing_model():
     api_steps = [
         ("Sequencer fires curl at test completion", 0),
         ("API parses both CSVs and runs the scorecard", 0),
-        ("Plot image, graded table image and interactive HTML return", 0),
+        ("Plot, graded table, heat map and interactive HTML return", 0),
         ("Engineer attaches the finished outputs to the ticket", 100),
     ]
     return {

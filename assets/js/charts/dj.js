@@ -516,8 +516,12 @@
       var dur = CH.reduced ? 0 : 900;
       g.select('rect').transition().duration(dur).delay(function (d, i) { return i * 90; })
         .attr('width', function (d) { return x(d.share); });
-      g.select('text').transition().duration(dur).delay(function (d, i) { return i * 90 + 240; })
-        .attr('x', function (d) { return x(d.share) + 8; }).style('opacity', 1);
+      g.select('text').each(function (d, i) {
+        var p = CH.barLabel(this, x(d.share), f, 8);   // measured — see CH.barLabel
+        d3.select(this).attr('text-anchor', p.anchor)
+          .transition().duration(dur).delay(i * 90 + 240)
+          .attr('x', p.x).style('opacity', 1);
+      });
     }
 
     return { reveal: reveal };

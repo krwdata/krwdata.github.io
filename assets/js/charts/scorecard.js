@@ -104,23 +104,14 @@
       apiBar.transition().duration(dur).delay(mode === 'both' ? 500 : 0)
         .attr('width', mode === 'both' ? Math.max(3, x(apiTotal)) : 0);
 
-      /* Put the label after the bar if it fits, inside the bar's end if it does
-         not. The manual bar reaches the full width on the comparison step, so
-         a fixed x(total) + 10 started 10px PAST the plot and ran 204px outside
-         the card — the text has nowhere to go in a 30px margin. Measuring is
-         the only way to know: the string changes per step and the box is
-         fluid. */
+      /* After the bar if it fits, inside its end if not — CH.barLabel decides.
+         This was the first chart to need it: the manual bar reaches full width
+         on the comparison step, so a fixed x(total) + 10 started 10px PAST the
+         plot and ran 204px outside the card. */
       function place(sel, atValue, txt) {
         sel.text(txt);
-        var w = 0;
-        try { w = sel.node().getComputedTextLength(); } catch (e) { w = txt.length * 7; }
-        var after = x(atValue) + 10;
-        if (after + w <= f.iw + f.m.right - 6) {
-          sel.attr('x', after).attr('text-anchor', 'start');
-        } else {
-          // Inside, right-aligned against the bar's end.
-          sel.attr('x', x(atValue) - 10).attr('text-anchor', 'end');
-        }
+        var p = CH.barLabel(sel.node(), x(atValue), f);
+        sel.attr('x', p.x).attr('text-anchor', p.anchor);
       }
 
       place(manualLab,
@@ -149,13 +140,20 @@
       { id: 'seq', label: 'Sequencer', sub: 'drives the test profile', p: [0.10, 0.84], group: 0 },
       { id: 'curl', label: 'curl', sub: 'fired at test completion', p: [0.40, 0.50], group: 1 },
       { id: 'api', label: 'Plumber API', sub: 'in Docker, on Linux', p: [0.66, 0.50], group: 2 },
-      { id: 'plot', label: 'Scored plot', sub: 'PNG', p: [0.93, 0.16], group: 3 },
-      { id: 'table', label: 'Graded table', sub: 'PNG', p: [0.93, 0.50], group: 3 },
-      { id: 'html', label: 'Interactive', sub: 'plotly HTML', p: [0.93, 0.84], group: 3 }
+      /* Four outputs, in the order the prose numbers them: the heat map is the
+         third and the plotly page the fourth. Spread 0.10..0.90 rather than
+         0.16..0.84 so four 46px boxes keep the same air between them that
+         three did. */
+      { id: 'plot', label: 'Scored plot', sub: 'PNG', p: [0.93, 0.10], group: 3 },
+      { id: 'table', label: 'Graded table', sub: 'PNG', p: [0.93, 0.3667], group: 3 },
+      /* 'Heat map', not 'Grate heat map': at 390px the box is 71px wide and the
+         longest label in this column already sits at the card's right edge. */
+      { id: 'heat', label: 'Heat map', sub: 'PNG', p: [0.93, 0.6333], group: 3 },
+      { id: 'html', label: 'Interactive', sub: 'plotly HTML', p: [0.93, 0.90], group: 3 }
     ];
     var LINKS = [
       ['tc', 'daq'], ['seq', 'daq'], ['daq', 'curl'], ['seq', 'curl'],
-      ['curl', 'api'], ['api', 'plot'], ['api', 'table'], ['api', 'html']
+      ['curl', 'api'], ['api', 'plot'], ['api', 'table'], ['api', 'heat'], ['api', 'html']
     ];
 
     var byId = {};
@@ -485,7 +483,7 @@
     { viz: 'timing', state: { mode: 'both' }, cap: 'Same session, both paths.' },
     { viz: 'arch', state: { upto: 0 }, cap: 'The rig: already automated, right up to the point where the data lands.' },
     { viz: 'arch', state: { upto: 2 }, cap: 'The sequencer already knows when the test ended. Let it make the request.' },
-    { viz: 'arch', state: { upto: 3 }, cap: 'Three outputs come back, ready to attach.' },
+    { viz: 'arch', state: { upto: 3 }, cap: 'Four outputs come back, ready to attach.' },
     { viz: 'trace', state: { set: true }, cap: 'The commanded profile: a staircase through the usable range.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true }, cap: 'Two channels: the cooking surface and the controller probe.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true, zoom: [40, 66], annot: { t: 44, series: 'grill', dx: 46, dy: -40, label: 'Overshoot', sub: 'then settle — the auger cycling' } }, cap: 'One step, up close.' },
