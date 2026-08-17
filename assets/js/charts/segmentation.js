@@ -275,10 +275,15 @@
     var host = document.querySelector('[data-seg-cards]');
     if (!host) return;
     host.innerHTML = D.segments.map(function (s) {
-      return '<div class="seg-card" style="--seg:' + SEG_COLOR[s.key] + '">' +
-        '<span class="seg-share">' + s.share + '%</span>' +
+      /* tabindex so the description is reachable without a mouse — it is
+         revealed on :hover and on :focus-within, and shown outright on touch
+         (see case-study.css). A hover-only reveal would hide a sixth of the
+         page's content from a phone. */
+      return '<div class="seg-card" style="--seg:' + SEG_COLOR[s.key] + '" tabindex="0">' +
+        '<span class="seg-share">' + s.share + '<span class="seg-pct">%</span></span>' +
         '<h4>' + s.name + '</h4>' +
-        '<p>' + s.blurb + '</p></div>';
+        '<p class="seg-blurb">' + s.blurb + '</p>' +
+        '<span class="seg-hint" aria-hidden="true">Detail →</span></div>';
     }).join('');
   }
 

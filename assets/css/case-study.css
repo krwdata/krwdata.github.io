@@ -318,10 +318,72 @@
 
 /* Segment cards */
 .seg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--gap); max-width: 940px; margin: clamp(24px, 3vw, 36px) auto; }
-.seg-card { border: 1px solid var(--rule-lite); border-top: 3px solid var(--seg, var(--accent)); background: var(--paper); padding: 18px 20px; }
-.seg-card h4 { font-family: var(--font-display); font-size: 16px; margin: 6px 0 8px; font-weight: 400; }
-.seg-card p { font-size: 13.5px; line-height: 1.55; color: #59535B; margin: 0; }
-.seg-share { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: var(--seg, var(--accent)); }
+/* Share first and large, then the name; the description arrives on hover.
+   The card is a FIXED height and the description is absolutely positioned, so
+   revealing it cannot reflow the grid — six cards re-flowing on mouseover is
+   the kind of movement that reads as a bug. Height is set for the longest
+   blurb (106 characters) at the narrowest column the grid allows. */
+.seg-card {
+  position: relative; min-height: 176px; overflow: hidden;
+  border: 1px solid var(--rule-lite); border-top: 3px solid var(--seg, var(--accent));
+  /* Tinted with its own series colour — the shading is the same identity the
+     scatter uses, so a card and its cluster are recognisably the same thing.
+     7% keeps 13.5px body text above 4.5:1 on every one of the six. */
+  background: var(--paper);
+  background: color-mix(in oklab, var(--seg, var(--accent)) 7%, var(--paper));
+  padding: 18px 20px 20px;
+  transition: background var(--t-mid), transform var(--t-mid);
+}
+.seg-card:hover, .seg-card:focus-within {
+  background: color-mix(in oklab, var(--seg, var(--accent)) 13%, var(--paper));
+  transform: translateY(-2px);
+}
+.seg-card:focus-visible { outline: 2px solid var(--seg, var(--accent)); outline-offset: 2px; }
+.seg-card h4 { font-family: var(--font-display); font-size: 16px; margin: 2px 0 0; font-weight: 400; }
+/* The number takes its segment's hue DARKENED 30% toward ink, not the raw
+   series colour. Measured, per rule 4 in the handoff: a series colour on a 13%
+   tint of itself lands at 2.6–3.8:1, so four of the six failed the 3:1 large-text
+   gate on their own card — teal worst at 2.64. Mixing 70/30 with ink keeps the
+   hue recognisably the same as the scatter's cluster and puts the worst case at
+   3.41:1. If you change the palette, re-measure this; do not eyeball it. */
+.seg-share {
+  display: block; font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(30px, 3.1vw, 38px); line-height: 1; letter-spacing: -0.02em;
+  color: var(--seg, var(--accent));
+  color: color-mix(in oklab, var(--seg, var(--accent)) 70%, var(--ink));
+}
+.seg-pct { font-size: 0.5em; margin-left: 1px; }
+.seg-blurb {
+  position: absolute; left: 20px; right: 20px; bottom: 18px;
+  font-size: 13.5px; line-height: 1.55; color: #59535B; margin: 0;
+  opacity: 0; transform: translateY(5px);
+  transition: opacity var(--t-mid), transform var(--t-mid);
+}
+.seg-card:hover .seg-blurb, .seg-card:focus-within .seg-blurb { opacity: 1; transform: none; }
+
+/* The affordance. A hover-only reveal that does not advertise itself is just
+   missing content, and the empty lower half of the resting card is what makes it
+   look like nothing is there. Only rendered where a hover actually exists. */
+.seg-hint {
+  position: absolute; left: 20px; bottom: 18px; display: none;
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: #8B858D;
+  transition: opacity var(--t-fast);
+}
+@media (hover: hover) {
+  .seg-hint { display: block; }
+  .seg-card:hover .seg-hint, .seg-card:focus-within .seg-hint { opacity: 0; }
+}
+/* No hover to give: a phone shows the description outright rather than hiding
+   it behind a gesture that does not exist there. */
+@media (hover: none) {
+  .seg-card { min-height: 0; }
+  .seg-blurb { position: static; opacity: 1; transform: none; margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg-card, .seg-blurb { transition: none; }
+  .seg-card:hover, .seg-card:focus-within { transform: none; }
+}
 .table-wrap .cap { font-size: 13px; color: #6A646D; line-height: 1.5; margin-top: 10px; }
 
 /* --- static figure (non-scrolly charts) ----------------------------------- */

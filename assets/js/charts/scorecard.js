@@ -297,6 +297,40 @@
     }
     redraw();
 
+    /* The overshoot, found rather than pointed at.
+
+       This label used to sit at a hardcoded t = 44, which was near the rise but
+       not on the peak — and it would drift off it the moment the generator's
+       seed or sample rate changed. What the step is about is the FIRST peak after
+       the controller is handed a new target.
+
+       "Highest reading in the dwell" is the wrong definition, and the data says
+       why: after the 375°F step the grill probe peaks at 396.7°F, dips, then
+       sawtooths back up to 399.2°F near the END of the dwell as the auger cycles.
+       Taking the maximum would put the label on the last tooth, twelve minutes
+       after the event it is naming.
+
+       So: from the set-point step, track the running maximum and stop once four
+       consecutive samples (~0.7 min) come in under it. Four rather than one
+       because the trace jitters a degree or two either way and a single dip is
+       not a turn. Returns the row at that maximum. */
+    function overshootRow(series, zoom) {
+      var win = zoom || full;
+      var key = series === 'grate' ? 'grate' : 'grill';
+      var stepAt = -1;
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i].t < win[0] || rows[i].t > win[1]) continue;
+        if (rows[i].set > rows[i - 1].set) { stepAt = i; break; }
+      }
+      if (stepAt < 0) return null;
+      var best = rows[stepAt], below = 0;
+      for (var j = stepAt; j < rows.length && rows[j].t <= win[1]; j++) {
+        if (rows[j][key] > best[key]) { best = rows[j]; below = 0; }
+        else if (++below >= 4) break;
+      }
+      return best;
+    }
+
     var shown = {};
     function update(s) {
       var dur = CH.reduced ? 0 : 800;
@@ -318,12 +352,23 @@
       if (s.annot) {
         var a = s.annot;
         window.setTimeout(function () {
-          var pt = rows.reduce(function (best, r) {
-            return Math.abs(r.t - a.t) < Math.abs(best.t - a.t) ? r : best;
-          }, rows[0]);
+          var pt = a.at === 'overshoot'
+            ? overshootRow(a.series, s.zoom)
+            : rows.reduce(function (best, r) {
+                return Math.abs(r.t - a.t) < Math.abs(best.t - a.t) ? r : best;
+              }, rows[0]);
+          if (!pt) return;
+          /* Offsets are written for the desktop column (~440px of plot). At 42vh
+             on a phone the plot is barely 150px, and the same 46/-40 throws the
+             label across the traces with a leader line longer than the step it
+             is annotating. Scale with the height available and drop the sub — the
+             step card beside it carries the same sentence. Identical treatment to
+             `makeArc` and `makeCue` in dj.js. */
+          var k = Math.min(1, f.ih / 380);
           CH.annotate(annotG, {
             key: 'a', x: x(pt.t), y: y(a.series === 'grill' ? pt.grill : pt.grate),
-            dx: a.dx, dy: a.dy, label: a.label, sub: a.sub
+            dx: a.dx * k, dy: a.dy * k, label: a.label,
+            sub: k < 0.75 ? '' : a.sub
           }).style('opacity', 0).transition().duration(340).style('opacity', 1);
         }, dur);
       }
@@ -486,7 +531,7 @@
     { viz: 'arch', state: { upto: 3 }, cap: 'Four outputs come back, ready to attach.' },
     { viz: 'trace', state: { set: true }, cap: 'The commanded profile: a staircase through the usable range.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true }, cap: 'Two channels: the cooking surface and the controller probe.' },
-    { viz: 'trace', state: { set: true, grate: true, grill: true, zoom: [40, 66], annot: { t: 44, series: 'grill', dx: 46, dy: -40, label: 'Overshoot', sub: 'then settle — the auger cycling' } }, cap: 'One step, up close.' },
+    { viz: 'trace', state: { set: true, grate: true, grill: true, zoom: [40, 66], annot: { at: 'overshoot', series: 'grill', dx: 46, dy: -40, label: 'Overshoot', sub: 'then settle' } }, cap: 'One step, up close.' },
     { viz: 'trace', state: { set: true, grate: true, grill: true, grades: true }, cap: 'A grade per set point, from accuracy and stability.' },
     { viz: 'heat', state: { play: true }, cap: 'The third output: the whole grate, stepped through the profile.' },
     { viz: 'heat', state: { at: 5 }, cap: 'At the top of the range the two ends of the grate are 40°F apart.' }
