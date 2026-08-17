@@ -72,7 +72,7 @@
       <div class="wrap section-head">
         <p class="section-marker"><span aria-hidden="true">●</span> One night, in full</p>
         <h2>New Year's Eve, <span data-dj="s1year">—</span></h2>
-        <p class="section-lede"><span data-dj="s1tracks">—</span> tracks, <span data-dj="s1start">—</span> to <span data-dj="s1end">—</span>, on a <span data-dj="s1dev">—</span>. Walk it once on its own, because the comparison below only means something if you know what one of these nights actually looks like. The clock is measured from midnight rather than from when I plugged in — that choice is doing work later.</p>
+        <p class="section-lede"><span data-dj="s1tracks">—</span> tracks, <span data-dj="s1start">—</span> to <span data-dj="s1end">—</span>, on a <span data-dj="s1dev">—</span>. Walk it once on its own, because the comparison below only means something if you know what one of these nights actually looks like. The clock runs from midnight rather than from my first track, so both nights can later be read on the same axis — they started 34 minutes apart and ran different lengths, but midnight is midnight.</p>
       </div>
 
       <div class="wrap">
@@ -120,9 +120,9 @@
 
             <div class="step"><div class="step-card" data-icon="midnight">
               <span class="step-n">04</span>
-              <h3>Midnight, unlabelled</h3>
-              <p>I did not tag this. Nothing in the pipeline knows what New Year's Eve is. The Beach Boys' <em>Auld Lang Syne</em> starts at 23:57:41 and runs through the countdown; the first record of the new year lands at 00:00:01. That is not a coincidence the pipeline arranged — it is what happened in the room.</p>
-              <p>It is a small thing and it is also the whole argument for working with event-level data rather than summaries. The average BPM of this night tells you nothing. The timestamps tell you there was a countdown.</p>
+              <h3>Midnight</h3>
+              <p>The Beach Boys' <em>Auld Lang Syne</em> starts at 23:57:41 and runs through the countdown; the first record of the new year lands at 00:00:01. Three minutes, one song, and the room turning over.</p>
+              <p>This is the argument for keeping data at the event level rather than the summary. The average BPM of this night is 114, which tells you nothing about it. The timestamps give you the countdown, the slow open and every notch in between.</p>
             </div></div>
 
             <div class="step"><div class="step-card" data-icon="chords">
@@ -154,10 +154,7 @@
       <div class="prose">
         <div class="callout callout--warn">
           <h4>This is not an A/B test — and that matters, so here is the difference</h4>
-          <p>I have borrowed the structure because it is the right way to <em>lay this out</em>: two arms, one fixed set of measures, read the same way on both. But an A/B test is a specific thing and this fails four of its requirements outright. <strong>Assignment was not random</strong> — it was the calendar. <strong>The arms are not concurrent</strong>, they are twelve months apart, which confounds the comparison with everything that happened in between. <strong>n = 1 per arm.</strong> And <strong>the treatment was never administered</strong>: "a year of practice" is a story I am telling about the gap, not an intervention I applied and measured. The metrics were also chosen after I had seen the data.</p>
-          <p>At least three things moved that I did not control — a different crowd, a different room, and a controller I had a year more practice on (<span data-dj="s1dev">—</span> in arm A, <span data-dj="s2dev">—</span> in arm B). Any single number below could be one of those instead of me.</p>
-          <p><strong>There is a tempting way to fake significance here and I want to name it.</strong> Arm A gives <span data-dj="s1transbpm">—</span> track-to-track tempo changes and arm B gives <span data-dj="s2transbpm">—</span>, so I could run a rank-sum test on those two distributions and print a p-value. That would be <em>pseudoreplication</em>: the thing that changed between the arms applies to the <strong>night</strong>, so the night is the unit of inference — but the test would be counting transitions as independent replicates. It would look like it had answered "did I change" when it had only answered "do these two specific nights differ", which is a measurement and needs no test at all. Transitions inside one night are autocorrelated on top of that, so the standard error would be fiction. No p-value appears on this page, deliberately.</p>
-          <p>So what is left? Two things, and they are worth more than a false test. The numbers below are <strong>measurements, not estimates</strong> — the median tempo jump really did go from <span data-dj="s1jump">—</span> to <span data-dj="s2jump">—</span>, and nothing about sampling changes that. And one comparative claim survives every confound above: <strong>these two skills are separable.</strong> Any explanation that accounts for the tempo change has to also account for why it left harmonic mixing exactly where it was, and "different crowd" does not do that. How <em>fast</em> either skill moves would need many more pairs — which is the argument for measuring next New Year's Eve too.</p>
+          <p>I have borrowed the structure because it is the right way to lay this out, but an A/B test is a specific thing and this fails four of its requirements: <strong>assignment was the calendar, not randomisation</strong>; <strong>the arms are twelve months apart rather than concurrent</strong>, so everything that happened in between is confounded with the result; <strong>n = 1 per arm</strong>; and <strong>the treatment was never administered</strong> — "a year of practice" is a story about the gap, not an intervention I applied. The metrics were chosen after I saw the data, and a crowd, a room and a controller all changed too. No p-value appears on this page deliberately: the thing that changed applies to the <em>night</em>, so counting <span data-dj="s1transbpm">—</span> and <span data-dj="s2transbpm">—</span> transitions as replicates would be pseudoreplication dressed as significance. What survives is narrower and worth more: these are <strong>measurements, not estimates</strong> — the median jump really did go from <span data-dj="s1jump">—</span> to <span data-dj="s2jump">—</span> — and whatever explains the tempo change still has to explain why harmonic mixing did not budge, which is why I read these two skills as separable.</p>
         </div>
       </div>
 
@@ -207,7 +204,26 @@
 
       <div class="prose">
         <p>Arm B's line climbs and then holds. Arm A's lurches — it swings through a wider band and crosses itself repeatedly. Both nights have a median tempo in the 120s, which is exactly why the summary table never showed this and the chart does.</p>
-        <p>Both countdowns land, too, and neither is tagged. Arm A: <span data-dj="s1last">—</span> at <span data-dj="s1lasttime">—</span> into <span data-dj="s1first">—</span> at <span data-dj="s1firsttime">—</span>. Arm B: <span data-dj="s2last">—</span> at <span data-dj="s2lasttime">—</span> into <span data-dj="s2first">—</span> at <span data-dj="s2firsttime">—</span>. Two independent nights hitting the transition inside a three-minute window, recovered from nothing but play timestamps.</p>
+        <p>Both countdowns land in the same place, too. Arm A: <span data-dj="s1last">—</span> at <span data-dj="s1lasttime">—</span> into <span data-dj="s1first">—</span> at <span data-dj="s1firsttime">—</span>. Arm B: <span data-dj="s2last">—</span> at <span data-dj="s2lasttime">—</span> into <span data-dj="s2first">—</span> at <span data-dj="s2firsttime">—</span>. Two nights a year apart, both crossing midnight inside a three-minute window.</p>
+        <h3>Where both arms agree</h3>
+        <p>Half an hour out from midnight I drop Destiny's Child, <em>Jumpin', Jumpin'</em> — a cheeky way to tell a room what time it is without picking up a microphone.</p>
+        <p class="lyric lyric--prose">’Cause it’s 11:30 and the club is jumpin’, jumpin’</p>
+        <p>Arm A played it at <strong>23:28</strong>, arm B at <strong>23:26</strong> — the same cue, a year apart, both a couple of minutes early, which is about what it takes for that line to land on the half hour.</p>
+      </div>
+
+      <div class="wrap">
+        <div class="ab-readout">
+          <div class="graphic-head">
+            <span class="chart-title">The same cue, both nights, on one clock</span>
+            <span class="graphic-tag">Real data</span>
+          </div>
+          <div class="ab-chart" data-cue="Jumpin', Jumpin'"></div>
+          <p class="ab-cap">Every track either night played in the ninety minutes before midnight, one lane per arm. The large dot is <em>Jumpin', Jumpin'</em> — announcing to the room that they have 30 minutes to the countdown.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>It is 89 BPM dropped between a 118 and a 103 in arm A, and it does the same job in a shorter night in arm B. A comparison is not only about what moved: everything else on this page is me working out what changed between these two nights, and this is the one thing I did deliberately both times — a fixed point to read the differences against.</p>
       </div>
 
       <div class="wrap">
@@ -226,6 +242,8 @@
         <p><strong>Tempo discipline moved a long way. Harmonic mixing did not move at all.</strong> The median jump between consecutive tracks went from <span data-dj="s1jump">—</span> BPM to <span data-dj="s2jump">—</span>, and transitions landing inside two BPM went from <span data-dj="s1w2">—</span> to <span data-dj="s2w2">—</span>. Over the same twelve months, transitions leaving the Camelot wheel went from <span data-dj="s1clash">—</span> to <span data-dj="s2clash">—</span> — up, not down — and the longest unbroken harmonic run was <span data-dj="s1run">—</span> on both nights. Identical.</p>
         <p>That row is grey in the readout rather than red, and the distinction matters: leaving the wheel is a choice, not a defect, so there is no direction it <em>ought</em> to move. What is damning is not the sign. It is that a year of deliberate practice moved the two tempo rows by 19 and 15 points and left this one sitting still.</p>
         <p>I would not have predicted the split. If asked, I would have guessed both numbers drifted the same way, because "getting better at DJing" felt like one skill rather than several. It is at least two, and I was only practising one of them.</p>
+
+        <p><strong>One equipment confound is worth naming, because it points the same way as the finding.</strong> Arm B was played on a <span data-dj="s2dev">—</span>, whose tempo slider is shallow: a short physical throw, and reaching a wide enough pitch range for a big adjustment takes extra steps first. Small moves are fiddly on a fader that short. The practical effect is that large tempo changes are more trouble on arm B's controller than on arm A's — so some of the shift toward closer tempos may be the hardware discouraging the big jumps rather than me choosing against them. It cannot explain the harmonic result, which needs no fader at all, and that asymmetry is exactly why the separable-skills claim survives it. But it does mean the tempo number is the one I would trust least of the six until a third night is on a controller I can hold constant.</p>
       </div>
     </section>
 

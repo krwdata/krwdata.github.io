@@ -1,7 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KW">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img"
+     aria-label="Camelot wheel">
+  <!-- The Camelot wheel from the DJ case study, reduced to what survives at
+       16px. Twelve wedges, one per Camelot number, in the exact hues of
+       CH.CAMELOT in assets/js/charts/common.js: number 1 at twelve o'clock,
+       stepping clockwise, same as the chart. The two rings and the per-track
+       dots are dropped deliberately — 24 bands and 2,246 dots are mud at tab
+       size. Ring is deliberately thick for the same reason. Regenerate this
+       if the palette in common.js ever changes. -->
   <rect width="64" height="64" fill="#141516"/>
-  <!-- A rising trace: the shape every chart on the site is made of. -->
-  <path d="M8 46 L20 46 L20 34 L32 34 L32 24 L44 24 L44 14 L56 14"
-        fill="none" stroke="#F88714" stroke-width="6"
-        stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M24.54,2.94A30.0,30.0 0 0 1 39.46,2.94L34.61,21.83A10.5,10.5 0 0 0 29.39,21.83Z" fill="#C76923"/>
+  <path d="M40.07,3.11A30.0,30.0 0 0 1 52.99,10.57L39.35,24.5A10.5,10.5 0 0 0 34.82,21.89Z" fill="#A87F24"/>
+  <path d="M53.43,11.01A30.0,30.0 0 0 1 60.89,23.93L42.11,29.18A10.5,10.5 0 0 0 39.5,24.65Z" fill="#888D24"/>
+  <path d="M61.06,24.54A30.0,30.0 0 0 1 61.06,39.46L42.17,34.61A10.5,10.5 0 0 0 42.17,29.39Z" fill="#29A125"/>
+  <path d="M60.89,40.07A30.0,30.0 0 0 1 53.43,52.99L39.5,39.35A10.5,10.5 0 0 0 42.11,34.82Z" fill="#299B7F"/>
+  <path d="M52.99,53.43A30.0,30.0 0 0 1 40.07,60.89L34.82,42.11A10.5,10.5 0 0 0 39.35,39.5Z" fill="#29979F"/>
+  <path d="M39.46,61.06A30.0,30.0 0 0 1 24.54,61.06L29.39,42.17A10.5,10.5 0 0 0 34.61,42.17Z" fill="#2891BF"/>
+  <path d="M23.93,60.89A30.0,30.0 0 0 1 11.01,53.43L24.65,39.5A10.5,10.5 0 0 0 29.18,42.11Z" fill="#467FF3"/>
+  <path d="M10.57,52.99A30.0,30.0 0 0 1 3.11,40.07L21.89,34.82A10.5,10.5 0 0 0 24.5,39.35Z" fill="#8E65F3"/>
+  <path d="M2.94,39.46A30.0,30.0 0 0 1 2.94,24.54L21.83,29.39A10.5,10.5 0 0 0 21.83,34.61Z" fill="#CB2EE0"/>
+  <path d="M3.11,23.93A30.0,30.0 0 0 1 10.57,11.01L24.5,24.65A10.5,10.5 0 0 0 21.89,29.18Z" fill="#E42C93"/>
+  <path d="M11.01,10.57A30.0,30.0 0 0 1 23.93,3.11L29.18,21.89A10.5,10.5 0 0 0 24.65,24.5Z" fill="#EF2E41"/>
 </svg>

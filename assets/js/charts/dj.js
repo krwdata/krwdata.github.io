@@ -63,6 +63,17 @@
     return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm;
   }
 
+  /* First track in a set whose title starts with `want`. Used by the arc's
+     annotations and by the cue chart, which have to resolve the same record
+     independently on each night. Prefix match rather than exact: Serato titles
+     carry suffixes like "(Explicit)" and "(2004 Remaster)". */
+  function findByTitle(night, want) {
+    var w = want.toLowerCase();
+    return night.tracks.filter(function (t) {
+      return t.bpm && (t.title || '').toLowerCase().indexOf(w) === 0;
+    })[0];
+  }
+
   /* Run fn the first time el is on screen. Static charts should still arrive
      rather than simply be there — the movement is what says "this was
      measured".
@@ -343,9 +354,19 @@
     var annotGen = 0;
     var drawn = false;
 
+    /* Two ways to point at a track. `at` reads night.midnight, which the parser
+       resolves by timestamp, so it survives a different featured pair; `title`
+       matches a name, for a record cued deliberately. Both return undefined on a
+       miss and the caller skips it, so a missing track means a missing
+       annotation rather than a broken chart. */
+    function anchorFor(a) {
+      if (a.at) return night.midnight[a.at];
+      return a.title ? findByTitle(night, a.title) : null;
+    }
+
     /* s.trend:    draw the rolling mean
        s.midnight: reveal the midnight rule
-       s.annot:    [{at:'last_of_year'|'first_of_year', dx, dy, label, sub}] */
+       s.annot:    [{at:'last_of_year'|'first_of_year'} | {title:'…'}, dx, dy, label, sub] */
     function update(s) {
       s = s || {};
       var dur = CH.reduced ? 0 : 600;
@@ -361,15 +382,26 @@
       var gen = ++annotGen;
       annotG.selectAll('*').remove();
       (s.annot || []).forEach(function (a, i) {
-        var hit = night.midnight[a.at];
+        var hit = anchorFor(a);
         if (!hit || !hit.bpm) return;
         window.setTimeout(function () {
           if (gen !== annotGen) return;        // a later step already took over
+          /* Offsets in STEPS are written for the desktop column, where the
+             graphic is about 380px tall. A 46vh graphic on a phone is half
+             that, and the same dy drops the label onto the x axis — so scale
+             the offsets with the height actually available, and drop the sub
+             there too: the label alone still names the track, and the card
+             beside it carries the time. Flip upward only if even the scaled
+             offset does not fit. */
+          var k = Math.min(1, f.ih / 380);
+          var py = y(hit.bpm), dx = a.dx * k, dy = a.dy * k;
+          if (dy > 0 && py + dy > f.ih - 18) dy = -Math.abs(dy);
+          var sub = k < 0.75 ? '' : (a.sub || (clockOf(hit.m) + ' · ' + hit.artist));
           CH.annotate(annotG, {
-            key: 'a' + i, x: x(hit.m), y: y(hit.bpm),
-            dx: a.dx, dy: a.dy,
+            key: 'a' + i, x: x(hit.m), y: py,
+            dx: dx, dy: dy,
             label: a.label || hit.title,
-            sub: a.sub || (clockOf(hit.m) + ' · ' + hit.artist)
+            sub: sub
           }).style('opacity', 0).transition().duration(340).style('opacity', 1);
         }, dur * 0.5);
       });
@@ -379,7 +411,119 @@
   }
 
   /* ======================================================================
-     3. READOUT — the A/B scoreboard, one row per metric.
+     3. CUE — the one record both arms play on purpose, on one clock.
+
+     This started as a label on each A/B card and that was the wrong place: the
+     cards are a screen and a half above the paragraph that explains the cue, so
+     the reader met a lone "11:30" with no account of it and then read about it
+     three paragraphs later.
+
+     One lane per night rather than one shared y. Both plays are the same track
+     at the same tempo two minutes apart, so on a tempo-against-clock chart the
+     two marks land almost exactly on top of each other — which reads as a
+     single dot and makes the claim invisible at the moment it should be
+     obvious. Separate lanes on a shared x turn "the same point in the night"
+     into vertical alignment, which is a thing you see rather than infer.
+     ====================================================================== */
+  function makeCue(el, title) {
+    var f = CH.frame(el, { top: 26, right: 26, bottom: 30, left: 74 });
+
+    /* Fixed window around midnight rather than each night's own extent: the
+       point is where the cue sits against the clock, and two different windows
+       would move it. */
+    var WIN = [-90, 10];
+    var x = d3.scaleLinear().domain(WIN).range([0, f.iw]);
+    var lane = [f.ih * 0.34, f.ih * 0.74];
+    /* Two independent constraints, and they are not the same measurement.
+       Ticks are about WIDTH: six of them in 320px collide with each other.
+       Label placement is about HEIGHT: the container is clamped to 180px until
+       the viewport is wide enough for 21vw to beat it, so an 8-inch-wide chart
+       can still be too short to hang a two-line label under the lower lane
+       without landing it on the axis. Measure the gap that actually matters. */
+    var narrowX = f.iw < 480;
+    var roomBelow = f.ih - lane[1];
+    var twoLine = roomBelow >= 46;
+
+    f.g.append('g').attr('class', 'axis')
+      .attr('transform', 'translate(0,' + f.ih + ')')
+      .call(d3.axisBottom(x).ticks(narrowX ? 4 : 6).tickFormat(clockOf));
+
+    // Midnight, so the reader has one fixed landmark besides the cue itself.
+    var mid = f.g.append('g');
+    mid.append('line').attr('x1', x(0)).attr('x2', x(0))
+      .attr('y1', -6).attr('y2', f.ih)
+      .attr('stroke', 'var(--ink)').attr('stroke-width', 1.2).attr('stroke-dasharray', '4 3');
+    mid.append('text').attr('class', 'chart-sub').attr('x', x(0)).attr('y', -10)
+      .attr('text-anchor', 'middle').style('fill', 'var(--ink)').style('font-size', '9.5px')
+      .text('MIDNIGHT');
+
+    var annotG = f.g.append('g');
+    var parts = [];
+
+    D.compare.sets.forEach(function (night, si) {
+      var y = lane[si];
+      var colour = ARM_COLOR[si];
+      var inWin = night.tracks.filter(function (t) {
+        return t.bpm && t.m >= WIN[0] && t.m <= WIN[1];
+      });
+
+      f.g.append('line').attr('x1', 0).attr('x2', f.iw).attr('y1', y).attr('y2', y)
+        .attr('stroke', 'var(--rule-lite)').attr('stroke-width', 1);
+
+      f.g.append('text').attr('class', 'annot-label')
+        .attr('x', -12).attr('y', y).attr('dy', '0.32em')
+        .attr('text-anchor', 'end').style('font-size', '11.5px').style('fill', colour)
+        /* Short form: the arms are established by the cards above, and the long
+           version needs more left margin than a lane label should take. */
+        .text(ARM_LETTER[si] + ' · ' + night.year);
+
+      var cue = findByTitle(night, title);
+
+      var dots = f.g.append('g').selectAll('circle').data(inWin).enter().append('circle')
+        .attr('cx', function (d) { return x(d.m); }).attr('cy', y)
+        .attr('r', function (d) { return cue && d.i === cue.i ? 5.5 : 3; })
+        .attr('fill', colour)
+        .attr('fill-opacity', function (d) { return cue && d.i === cue.i ? 1 : 0.34; })
+        .attr('opacity', 0)
+        .style('cursor', 'pointer')
+        .on('mousemove', function (evt, d) {
+          Tip.show('<span class="tip-k">' + ARM_LETTER[si] + ' · NYE ' + night.year +
+            ' · ' + clockOf(d.m) + ' · ' + d.bpm + ' bpm</span>' +
+            '<strong>' + d.title + '</strong><br>' + d.artist, evt);
+        })
+        .on('mouseleave', function () { Tip.hide(); });
+
+      parts.push({ dots: dots, cue: cue, y: y, si: si });
+    });
+
+    function reveal() {
+      var dur = CH.reduced ? 0 : 520;
+      parts.forEach(function (p) {
+        p.dots.transition().duration(dur)
+          .delay(function (d, i) { return CH.reduced ? 0 : p.si * 160 + i * 14; })
+          .attr('opacity', 1);
+        if (!p.cue) return;                        // a featured set without it
+        /* Tall enough: each label points away from the other lane, so neither
+           leader crosses the gap between them. Short: both point up, which keeps
+           the lower one off the axis and still lands it in the empty band
+           between the lanes — the leader says which lane it belongs to. */
+        window.setTimeout(function () {
+          CH.annotate(annotG, {
+            key: 'cue' + p.si, x: x(p.cue.m), y: p.y,
+            dx: twoLine ? 40 : 24,
+            dy: twoLine ? (p.si === 0 ? -30 : 30) : -20,
+            label: clockOf(p.cue.m),
+            sub: twoLine ? p.cue.bpm + ' bpm' : ''
+          }).style('opacity', 0).transition().duration(340).style('opacity', 1);
+        }, CH.reduced ? 0 : 700);
+      });
+    }
+
+    return { reveal: reveal };
+  }
+
+  /* ======================================================================
+     4. READOUT — the A/B scoreboard, one row per metric.
      Each row carries its own scale. A shared axis would be a lie: minutes,
      BPM and percentages do not belong on one ruler, and the question a row
      answers is "which way did this move and by how much", not "how does
@@ -479,7 +623,7 @@
   }
 
   /* ======================================================================
-     4. MOVES — every transition across every set
+     5. MOVES — every transition across every set
      ====================================================================== */
   function makeMoves(el) {
     var f = CH.frame(el, { top: 22, right: 74, bottom: 38, left: 176 });
@@ -672,8 +816,8 @@
     { viz: 'arc', state: {
         midnight: true, trend: true,
         annot: [{ at: 'last_of_year', dx: -62, dy: -52,
-                  label: 'Auld Lang Syne', sub: '23:57 — the data knows what night it is' }]
-      }, cap: 'Midnight, without anyone having to label it.' },
+                  label: 'Auld Lang Syne' }]
+      }, cap: 'Auld Lang Syne at 23:57, into the first record of the year at 00:00.' },
 
     { viz: 'wheel', state: { chords: true, set: 0, centre: 'one night' },
       cap: 'Every transition in that set, drawn across the wheel.' },
@@ -730,11 +874,20 @@
       }
 
       /* --- the A/B panel ------------------------------------------------ */
+      /* The cards carry no annotation: at card size a label sits on screen a long
+         way from the paragraph that explains it. The shared cue gets its own
+         chart, next to its own copy — makeCue. */
       [].forEach.call(document.querySelectorAll('[data-ab-chart]'), function (el) {
         var si = +el.getAttribute('data-ab-chart');
         var inst = makeArc(el, si, { compact: true });
         whenVisible(el, function () { inst.update({ trend: true, midnight: true }); });
       });
+
+      var cueEl = document.querySelector('[data-cue]');
+      if (cueEl) {
+        var cue = makeCue(cueEl, cueEl.getAttribute('data-cue'));
+        whenVisible(cueEl, cue.reveal, 0.4);
+      }
 
       var readoutEl = document.querySelector('[data-ab-readout]');
       if (readoutEl) {
